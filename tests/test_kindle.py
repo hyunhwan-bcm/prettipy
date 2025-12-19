@@ -2,6 +2,7 @@
 
 import pytest
 import os
+import smtplib
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 from prettipy.kindle import send_to_kindle, KindleDeliveryError
@@ -217,7 +218,3 @@ class TestKindleDelivery:
             )
         
         assert "Failed to send email" in str(exc_info.value)
-
-
-# Import smtplib to use in tests
-import smtplib
