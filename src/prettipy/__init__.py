@@ -11,5 +11,6 @@ __email__ = "your.email@example.com"
 
 from .core import PrettipyConverter
 from .config import PrettipyConfig
+from .kindle import send_to_kindle, KindleDeliveryError
 
-__all__ = ["PrettipyConverter", "PrettipyConfig"]
+__all__ = ["PrettipyConverter", "PrettipyConfig", "send_to_kindle", "KindleDeliveryError"]

@@ -18,6 +18,7 @@ Transform your Python source code into professionally formatted, syntax-highligh
 - 📋 **Rich Output**: Beautiful progress bars and formatted output (when `rich` is installed)
 - 🔍 **Smart Filtering**: Automatically excludes common directories like `venv`, `__pycache__`, etc.
 - 📄 **Professional Layout**: Clean, readable formatting with proper spacing and margins
+- 📧 **Kindle Delivery**: Send generated PDFs directly to your Kindle device via email
 
 ## 🚀 Quick Start
 
@@ -144,6 +145,78 @@ converter.convert_files(
     output='core.pdf'
 )
 ```
+
+## 📧 Send to Kindle
+
+Prettipy includes a convenient feature to send generated PDFs directly to your Kindle device or app.
+
+### Setup
+
+1. **Find Your Kindle Email Address**
+   - Go to [Amazon Account Settings](https://www.amazon.com/hz/mycd/digital-console/contentlist/)
+   - Navigate to "Preferences" > "Personal Document Settings"
+   - Your Kindle email will be something like `yourname@kindle.com`
+
+2. **Approve Your Sender Email**
+   - In the same settings page, find "Approved Personal Document E-mail List"
+   - Add the email address you'll send from (e.g., your Gmail address)
+
+3. **Set Up SMTP Credentials**
+   - For Gmail, create an [App Password](https://myaccount.google.com/apppasswords)
+   - Set environment variables:
+     ```bash
+     export KINDLE_EMAIL="yourname@kindle.com"
+     export SMTP_USER="your.email@gmail.com"
+     export SMTP_PASS="your-app-password"
+     ```
+
+### Usage
+
+```python
+from prettipy import PrettipyConverter, send_to_kindle
+
+# Generate a PDF
+converter = PrettipyConverter()
+converter.convert_directory("./my_project", output="project.pdf")
+
+# Send to Kindle using environment variables
+send_to_kindle("project.pdf")
+
+# Or provide credentials explicitly
+send_to_kindle(
+    pdf_path="project.pdf",
+    kindle_email="yourname@kindle.com",
+    smtp_user="your.email@gmail.com",
+    smtp_pass="your-app-password",
+    subject="My Python Project"
+)
+
+# Use custom SMTP server
+send_to_kindle(
+    pdf_path="project.pdf",
+    kindle_email="yourname@kindle.com",
+    smtp_user="user@custom.com",
+    smtp_pass="password",
+    smtp_host="smtp.custom.com",
+    smtp_port=587
+)
+```
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `KINDLE_EMAIL` | Your Kindle email address | `yourname@kindle.com` |
+| `SMTP_USER` | SMTP username (your email) | `your.email@gmail.com` |
+| `SMTP_PASS` | SMTP password or app password | `your-app-password` |
+
+### Notes
+
+- PDFs typically appear in your Kindle library within a few minutes
+- Maximum file size is 50MB per document
+- The default SMTP server is Gmail (`smtp.gmail.com:587`)
+- For Gmail, you must use an app-specific password if 2FA is enabled
+- The sender email must be approved in your Amazon account settings
 
 ## ⚙️ Configuration
 
