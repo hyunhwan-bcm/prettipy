@@ -1,0 +1,165 @@
+# Contributing to Prettipy
+
+Thank you for your interest in contributing to Prettipy! This document provides guidelines and instructions for contributing.
+
+## Code of Conduct
+
+Be respectful, inclusive, and professional in all interactions. We're all here to make Prettipy better!
+
+## How to Contribute
+
+### Reporting Bugs
+
+If you find a bug:
+
+1. Check if it's already reported in [Issues](https://github.com/yourusername/prettipy/issues)
+2. If not, create a new issue with:
+   - Clear title and description
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Python version and OS
+   - Code samples or screenshots if applicable
+
+### Suggesting Features
+
+We welcome feature suggestions! Please:
+
+1. Check existing issues first
+2. Create a new issue describing:
+   - The feature and its benefits
+   - Use cases
+   - Possible implementation approaches
+
+### Pull Requests
+
+1. **Fork the repository**
+
+2. **Create a branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Make your changes**:
+   - Write clean, readable code
+   - Follow existing code style
+   - Add tests for new features
+   - Update documentation as needed
+
+4. **Test your changes**:
+   ```bash
+   pytest
+   black src/prettipy tests
+   flake8 src/prettipy tests
+   ```
+
+5. **Commit your changes**:
+   ```bash
+   git commit -m "Add feature: description"
+   ```
+   Use clear, descriptive commit messages.
+
+6. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+7. **Create a Pull Request**:
+   - Provide a clear title and description
+   - Reference any related issues
+   - Explain what changed and why
+
+## Development Setup
+
+See [SETUP.md](SETUP.md) for detailed setup instructions.
+
+Quick start:
+```bash
+git clone <your-fork>
+cd prettipy
+python -m venv venv
+source venv/bin/activate
+pip install -e ".[dev,rich]"
+pytest
+```
+
+## Coding Guidelines
+
+### Style
+
+- Follow PEP 8
+- Use `black` for formatting (line length: 100)
+- Use type hints where appropriate
+- Write docstrings for public functions/classes
+
+### Testing
+
+- Write tests for new features
+- Ensure all tests pass before submitting PR
+- Aim for good test coverage
+- Use pytest fixtures for reusable test data
+
+### Documentation
+
+- Update README.md if adding features
+- Add docstrings to new functions/classes
+- Update SETUP.md if changing setup process
+- Include examples for new features
+
+## Project Structure
+
+```
+src/prettipy/
+├── __init__.py     # Package initialization
+├── cli.py          # Command-line interface
+├── config.py       # Configuration management
+├── core.py         # Main PDF generation logic
+├── formatter.py    # Code formatting/wrapping
+├── styles.py       # PDF styling
+└── syntax.py       # Syntax highlighting
+```
+
+## Areas for Contribution
+
+### Easy (Good First Issues)
+
+- Add more color themes
+- Improve error messages
+- Add more examples
+- Documentation improvements
+- Add more tests
+
+### Medium
+
+- Add line numbering feature
+- Support for more file types
+- Table of contents generation
+- Additional configuration options
+
+### Advanced
+
+- PDF bookmarks/navigation
+- Custom syntax highlighting rules
+- Performance optimizations
+- Export to other formats (HTML, etc.)
+
+## Review Process
+
+1. Maintainers will review your PR
+2. Address any requested changes
+3. Once approved, your PR will be merged
+4. Your contribution will be in the next release!
+
+## Questions?
+
+- Open an issue for questions
+- Discussion section for general topics
+- Check existing documentation first
+
+## Recognition
+
+Contributors will be recognized in:
+- README.md contributors section
+- Release notes
+- GitHub contributors page
+
+Thank you for contributing to Prettipy!

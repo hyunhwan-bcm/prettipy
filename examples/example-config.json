@@ -1,0 +1,37 @@
+{
+  "exclude_dirs": [
+    ".git",
+    ".svn",
+    ".hg",
+    "venv",
+    "env",
+    ".venv",
+    ".env",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    "node_modules",
+    "dist",
+    "build",
+    ".tox",
+    ".idea",
+    ".vscode",
+    ".DS_Store"
+  ],
+  "exclude_patterns": [
+    "*_test.py",
+    "test_*.py"
+  ],
+  "include_patterns": [
+    "*.py"
+  ],
+  "max_line_width": 90,
+  "font_size": 9,
+  "line_spacing": 14,
+  "page_size": "letter",
+  "title": "My Python Project",
+  "show_line_numbers": false,
+  "theme": "default",
+  "output_file": "output.pdf",
+  "verbose": false
+}
