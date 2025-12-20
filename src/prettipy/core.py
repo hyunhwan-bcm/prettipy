@@ -168,6 +168,10 @@ class PrettipyConverter:
             # Process file content
             try:
                 code = file_path.read_text(encoding='utf-8')
+                
+                # Prepare highlighter for linking by analyzing the code first
+                self.highlighter.prepare_for_linking(code)
+                
                 lines = code.split('\n')
 
                 # Wrap and highlight code
