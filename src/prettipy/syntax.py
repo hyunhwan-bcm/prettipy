@@ -30,6 +30,10 @@ class SyntaxHighlighter:
         Token.Comment.Multiline: '#60a0b0',
         Token.Operator: '#666666',
     }
+    
+    # Constants for token context analysis
+    MAX_LOOKBACK_TOKENS = 5  # How many tokens to look back for def/class keywords
+    MAX_LOOKAHEAD_TOKENS = 5  # How many tokens to look ahead for assignment operators
 
     def __init__(self, color_scheme: Dict = None, enable_linking: bool = True):
         """
@@ -146,7 +150,7 @@ class SyntaxHighlighter:
         
         # Look backward for 'def' or 'class' keywords (only if not at start)
         if token_idx > 0:
-            for i in range(token_idx - 1, max(-1, token_idx - 5), -1):
+            for i in range(token_idx - 1, max(-1, token_idx - self.MAX_LOOKBACK_TOKENS), -1):
                 token_type, token_value = tokens[i]
                 # Skip whitespace
                 if token_type in Token.Text:
@@ -161,7 +165,7 @@ class SyntaxHighlighter:
                 break
         
         # Look forward for '=' (assignment)
-        for i in range(token_idx + 1, min(len(tokens), token_idx + 5)):
+        for i in range(token_idx + 1, min(len(tokens), token_idx + self.MAX_LOOKAHEAD_TOKENS)):
             token_type, token_value = tokens[i]
             # Skip whitespace
             if token_type in Token.Text:
@@ -233,7 +237,7 @@ class SyntaxHighlighter:
         highlighted_lines = [''] * len(lines)
         current_line = 0
         
-        for token_type, token_value in tokens:
+        for token_idx, (token_type, token_value) in enumerate(tokens):
             # Split token value by newlines to handle multiline tokens
             token_lines = token_value.split('\n')
             
@@ -247,7 +251,10 @@ class SyntaxHighlighter:
                     
                 if line_part:
                     # Colorize the entire line part as one unit
-                    highlighted_part = self._colorize_token(token_type, line_part)
+                    # Pass tokens and index for linking support
+                    highlighted_part = self._colorize_token(
+                        token_type, line_part, tokens, token_idx
+                    )
                     highlighted_lines[current_line] += highlighted_part
         
         # Convert empty lines to <br/>

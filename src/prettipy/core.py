@@ -169,6 +169,9 @@ class PrettipyConverter:
             try:
                 code = file_path.read_text(encoding='utf-8')
                 
+                # Prepare highlighter for linking by analyzing the code first
+                self.highlighter.prepare_for_linking(code)
+                
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs
                 highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)

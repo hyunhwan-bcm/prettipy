@@ -115,12 +115,16 @@ class SymbolTracker:
 
     def get_anchor_name(self, name: str) -> str:
         """
-        Get the anchor name for a symbol.
+        Get the anchor name for a symbol, sanitizing it for use in HTML.
 
         Args:
             name: Symbol name
 
         Returns:
-            Anchor name for use in HTML links
+            Sanitized anchor name for use in HTML links
         """
-        return f"def_{name}"
+        # Sanitize the name to be safe for HTML attributes
+        # Replace any non-alphanumeric characters (except underscore) with underscore
+        import re
+        sanitized = re.sub(r'[^a-zA-Z0-9_]', '_', name)
+        return f"def_{sanitized}"
