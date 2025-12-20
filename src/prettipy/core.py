@@ -169,28 +169,12 @@ class PrettipyConverter:
             try:
                 code = file_path.read_text(encoding='utf-8')
                 
-                # Prepare highlighter for linking by analyzing the code first
-                self.highlighter.prepare_for_linking(code)
+                # Highlight with multiline awareness
+                # This correctly handles triple-quoted strings and other multiline constructs
+                highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
                 
-                lines = code.split('\n')
-
-                # Wrap and highlight code
-                all_lines_html = []
-                for line in lines:
-                    if not line.strip():
-                        all_lines_html.append('<br/>')
-                        continue
-
-                    # Wrap long lines
-                    wrapped_lines = self.formatter.wrap_line(line)
-
-                    # Highlight each wrapped line
-                    for wrapped_line in wrapped_lines:
-                        highlighted = self.highlighter.highlight_line(wrapped_line)
-                        all_lines_html.append(highlighted)
-
                 # Create code block
-                full_code_html = '<br/>'.join(all_lines_html)
+                full_code_html = '<br/>'.join(highlighted_lines)
                 story.append(Paragraph(full_code_html, self.styles['code']))
 
             except Exception as e:

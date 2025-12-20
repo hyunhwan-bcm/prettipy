@@ -205,3 +205,50 @@ class SyntaxHighlighter:
 
         highlighted_lines = [self.highlight_line(line) for line in lines]
         return '<br/>'.join(highlighted_lines)
+
+    def highlight_code_multiline_aware(self, code: str) -> List[str]:
+        """
+        Highlight code with proper multiline string support.
+        
+        This method processes the entire code block to correctly identify
+        multiline strings and other constructs that span multiple lines,
+        then returns a list of highlighted HTML strings for each line.
+
+        Args:
+            code: Full code string to highlight
+
+        Returns:
+            List of HTML strings, one per line
+        """
+        if not code:
+            return []
+        
+        # Tokenize the entire code block
+        tokens = list(lex(code, self.lexer))
+        
+        # Split code into lines to track line boundaries
+        lines = code.split('\n')
+        
+        # Build highlighted HTML for each line
+        highlighted_lines = [''] * len(lines)
+        current_line = 0
+        
+        for token_type, token_value in tokens:
+            # Split token value by newlines to handle multiline tokens
+            token_lines = token_value.split('\n')
+            
+            for i, line_part in enumerate(token_lines):
+                if i > 0:
+                    # New line boundary
+                    current_line += 1
+                
+                if current_line >= len(lines):
+                    break
+                    
+                if line_part:
+                    # Colorize the entire line part as one unit
+                    highlighted_part = self._colorize_token(token_type, line_part)
+                    highlighted_lines[current_line] += highlighted_part
+        
+        # Convert empty lines to <br/>
+        return [line if line else '<br/>' for line in highlighted_lines]
