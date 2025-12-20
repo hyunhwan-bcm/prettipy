@@ -2,7 +2,7 @@
 # Script to convert Prettipy documentation to PDF format
 # Requires: pandoc and pdflatex (texlive)
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -80,21 +80,33 @@ done
 echo ""
 print_info "Creating complete documentation bundle..."
 
-# Create combined PDF
-pandoc "$SCRIPT_DIR/README.md" \
-       "$SCRIPT_DIR/QUICKSTART.md" \
-       "$SCRIPT_DIR/SETUP.md" \
-       "$SCRIPT_DIR/CONTRIBUTING.md" \
-    -o "$OUTPUT_DIR/prettipy-complete-documentation.pdf" \
-    --toc \
-    --toc-depth=3 \
-    $PDF_ENGINE \
-    -V geometry:margin=1in \
-    -V fontsize=11pt \
-    -V documentclass=article \
-    -V title="Prettipy Complete Documentation" \
-    -V author="Prettipy Project" \
-    2>&1 | grep -v "Missing character" || true
+# Build list of files that exist
+DOCS_TO_COMBINE=()
+for file in README.md QUICKSTART.md SETUP.md CONTRIBUTING.md; do
+    if [ -f "$SCRIPT_DIR/$file" ]; then
+        DOCS_TO_COMBINE+=("$SCRIPT_DIR/$file")
+    else
+        print_warning "$file not found, excluding from bundle..."
+    fi
+done
+
+# Only create combined PDF if we have at least one file
+if [ ${#DOCS_TO_COMBINE[@]} -gt 0 ]; then
+    pandoc "${DOCS_TO_COMBINE[@]}" \
+        -o "$OUTPUT_DIR/prettipy-complete-documentation.pdf" \
+        --toc \
+        --toc-depth=3 \
+        $PDF_ENGINE \
+        -V geometry:margin=1in \
+        -V fontsize=11pt \
+        -V documentclass=article \
+        -V title="Prettipy Complete Documentation" \
+        -V author="Prettipy Project" \
+        2>&1 | grep -v "Missing character" || true
+else
+    print_error "No documentation files found to combine!"
+    exit 1
+fi
 
 echo ""
 print_info "✅ Documentation conversion complete!"
