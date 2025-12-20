@@ -2,6 +2,27 @@
 
 Thank you for your interest in contributing to Prettipy! This document provides guidelines and instructions for contributing.
 
+## 📑 Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How to Contribute](#how-to-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Features](#suggesting-features)
+  - [Pull Requests](#pull-requests)
+- [Development Setup](#development-setup)
+- [Coding Guidelines](#coding-guidelines)
+  - [Style](#style)
+  - [Testing](#testing)
+  - [Documentation](#documentation)
+- [Project Structure](#project-structure)
+- [Areas for Contribution](#areas-for-contribution)
+  - [Easy (Good First Issues)](#easy-good-first-issues)
+  - [Medium](#medium)
+  - [Advanced](#advanced)
+- [Review Process](#review-process)
+- [Questions?](#questions)
+- [Recognition](#recognition)
+
 ## Code of Conduct
 
 Be respectful, inclusive, and professional in all interactions. We're all here to make Prettipy better!

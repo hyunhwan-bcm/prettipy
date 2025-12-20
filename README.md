@@ -8,6 +8,34 @@ Transform your Python source code into professionally formatted, syntax-highligh
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## 📑 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+  - [Installation](#installation)
+  - [Basic Usage](#basic-usage)
+- [📖 Detailed Usage](#-detailed-usage)
+  - [Command Line Interface](#command-line-interface)
+  - [Examples](#examples)
+  - [Python API](#python-api)
+- [⚙️ Configuration](#️-configuration)
+  - [Configuration File](#configuration-file)
+  - [Configuration Options](#configuration-options)
+- [🎨 Themes](#-themes)
+- [🛠️ Development](#️-development)
+  - [Setup Development Environment](#setup-development-environment)
+  - [Run Tests](#run-tests)
+  - [Code Quality](#code-quality)
+- [📦 Building and Publishing](#-building-and-publishing)
+  - [Build Package](#build-package)
+  - [Publish to PyPI](#publish-to-pypi)
+- [🤝 Contributing](#-contributing)
+- [📋 Roadmap](#-roadmap)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
+- [📬 Contact](#-contact)
+- [📚 Documentation as PDF](#-documentation-as-pdf)
+
 ## ✨ Features
 
 - 🎨 **Syntax Highlighting**: Beautiful, GitHub-style syntax highlighting using Pygments
@@ -309,6 +337,85 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Author**: Hyun-Hwan Jeong
 - **Email**: hyun-hwan.jeong@bcm.edu
 - **GitHub**: [@hyunhwan-bcm](https://github.com/hyunhwan-bcm)
+
+## 📚 Documentation as PDF
+
+### Viewing Documentation as PDF
+
+You can convert any of the project documentation files (README.md, QUICKSTART.md, SETUP.md, CONTRIBUTING.md) to PDF format using various tools:
+
+#### Option 1: Using Pandoc (Recommended)
+
+[Pandoc](https://pandoc.org/) is a universal document converter that produces high-quality PDFs:
+
+```bash
+# Install pandoc (macOS)
+brew install pandoc
+
+# Install pandoc (Ubuntu/Debian)
+sudo apt-get install pandoc texlive-latex-base texlive-latex-recommended
+
+# Install pandoc (Windows)
+# Download from https://pandoc.org/installing.html
+
+# Convert README to PDF
+pandoc README.md -o README.pdf --pdf-engine=pdflatex
+
+# Convert with table of contents
+pandoc README.md -o README.pdf --toc --pdf-engine=pdflatex
+
+# Convert all documentation files
+pandoc README.md QUICKSTART.md SETUP.md CONTRIBUTING.md \
+  -o prettipy-documentation.pdf --toc --pdf-engine=pdflatex
+```
+
+#### Option 2: Using grip (GitHub-style rendering)
+
+```bash
+# Install grip
+pip install grip
+
+# Render README as GitHub would (opens in browser)
+grip README.md
+
+# Then use your browser's "Print to PDF" feature
+```
+
+#### Option 3: Using markdown-pdf (Node.js)
+
+```bash
+# Install markdown-pdf
+npm install -g markdown-pdf
+
+# Convert to PDF
+markdown-pdf README.md
+
+# Convert all documentation
+markdown-pdf README.md QUICKSTART.md SETUP.md CONTRIBUTING.md
+```
+
+#### Option 4: Online Converters
+
+You can also use online Markdown to PDF converters:
+- [Markdown to PDF](https://www.markdowntopdf.com/)
+- [CloudConvert](https://cloudconvert.com/md-to-pdf)
+- [Dillinger](https://dillinger.io/) (with export option)
+
+### Complete Documentation Bundle
+
+To create a complete PDF bundle of all documentation:
+
+```bash
+# Using Pandoc with custom styling
+pandoc README.md QUICKSTART.md SETUP.md CONTRIBUTING.md \
+  -o prettipy-complete-docs.pdf \
+  --toc \
+  --toc-depth=3 \
+  --pdf-engine=pdflatex \
+  -V geometry:margin=1in \
+  -V fontsize=11pt \
+  -V documentclass=article
+```
 
 ---
 

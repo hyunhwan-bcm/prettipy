@@ -2,6 +2,25 @@
 
 Your Python code to PDF converter is ready! Here's how to get started.
 
+## 📑 Table of Contents
+
+- [What You Have Now](#what-you-have-now)
+- [Immediate Next Steps](#immediate-next-steps)
+  - [1. Customize Your Information](#1-customize-your-information)
+  - [2. Install and Test Locally](#2-install-and-test-locally)
+  - [3. Run Tests](#3-run-tests)
+- [Publishing to PyPI](#publishing-to-pypi)
+  - [Before Publishing](#before-publishing)
+  - [Publish to PyPI](#publish-to-pypi-1)
+- [Using Your Package](#using-your-package)
+  - [Command Line](#command-line)
+  - [Python API](#python-api)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Next Steps](#next-steps)
+- [Need Help?](#need-help)
+- [What Makes This Special](#what-makes-this-special)
+
 ## What You Have Now
 
 A complete, professional Python package with:

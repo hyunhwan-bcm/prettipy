@@ -2,6 +2,30 @@
 
 This guide will help you set up Prettipy for development or prepare it for publishing to PyPI.
 
+## 📑 Table of Contents
+
+- [For Users](#for-users)
+  - [Installation](#installation)
+  - [Quick Start](#quick-start)
+- [For Developers](#for-developers)
+  - [Initial Setup](#initial-setup)
+  - [Project Structure](#project-structure)
+  - [Running Tests](#running-tests)
+  - [Code Quality](#code-quality)
+  - [Testing Locally](#testing-locally)
+- [Publishing to PyPI](#publishing-to-pypi)
+  - [Prerequisites](#prerequisites)
+  - [Build the Package](#build-the-package)
+  - [Test on TestPyPI](#test-on-testpypi)
+  - [Publish to PyPI](#publish-to-pypi-1)
+  - [Post-Publication](#post-publication)
+- [Version Management](#version-management)
+- [Troubleshooting](#troubleshooting)
+  - [Import Errors](#import-errors)
+  - [Missing Dependencies](#missing-dependencies)
+  - [Build Failures](#build-failures)
+- [Resources](#resources)
+
 ## For Users
 
 ### Installation
