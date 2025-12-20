@@ -10,31 +10,31 @@ Transform your Python source code into professionally formatted, syntax-highligh
 
 ## 📑 Table of Contents
 
-- [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
+- [✨ Features](#features)
+- [🚀 Quick Start](#quick-start)
   - [Installation](#installation)
   - [Basic Usage](#basic-usage)
-- [📖 Detailed Usage](#-detailed-usage)
+- [📖 Detailed Usage](#detailed-usage)
   - [Command Line Interface](#command-line-interface)
   - [Examples](#examples)
   - [Python API](#python-api)
-- [⚙️ Configuration](#️-configuration)
+- [⚙️ Configuration](#configuration)
   - [Configuration File](#configuration-file)
   - [Configuration Options](#configuration-options)
-- [🎨 Themes](#-themes)
-- [🛠️ Development](#️-development)
+- [🎨 Themes](#themes)
+- [🛠️ Development](#development)
   - [Setup Development Environment](#setup-development-environment)
   - [Run Tests](#run-tests)
   - [Code Quality](#code-quality)
-- [📦 Building and Publishing](#-building-and-publishing)
+- [📦 Building and Publishing](#building-and-publishing)
   - [Build Package](#build-package)
   - [Publish to PyPI](#publish-to-pypi)
-- [🤝 Contributing](#-contributing)
-- [📋 Roadmap](#-roadmap)
-- [📄 License](#-license)
-- [🙏 Acknowledgments](#-acknowledgments)
-- [📬 Contact](#-contact)
-- [📚 Documentation as PDF](#-documentation-as-pdf)
+- [🤝 Contributing](#contributing)
+- [📋 Roadmap](#roadmap)
+- [📄 License](#license)
+- [🙏 Acknowledgments](#acknowledgments)
+- [📬 Contact](#contact)
+- [📚 Documentation as PDF](#documentation-as-pdf)
 
 ## ✨ Features
 
@@ -343,6 +343,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Viewing Documentation as PDF
 
 You can convert any of the project documentation files (README.md, QUICKSTART.md, SETUP.md, CONTRIBUTING.md) to PDF format using various tools:
+
+#### Quick Method: Use the Provided Script
+
+The repository includes a convenient script to convert all documentation to PDF:
+
+```bash
+# Make sure pandoc is installed first (see Option 1 below)
+./docs_to_pdf.sh
+```
+
+This will create a `pdf_docs/` directory with:
+- Individual PDF files for each documentation file
+- `prettipy-complete-documentation.pdf` - All docs in one file
 
 #### Option 1: Using Pandoc (Recommended)
 

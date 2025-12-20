@@ -40,3 +40,6 @@ ENV/
 # Output files
 output.pdf
 *.pdf
+
+# Generated documentation
+pdf_docs/
