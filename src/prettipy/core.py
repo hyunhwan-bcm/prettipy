@@ -29,7 +29,7 @@ class PrettipyConverter:
         """
         self.config = config or PrettipyConfig()
         self.formatter = CodeFormatter(max_width=self.config.max_line_width)
-        self.highlighter = SyntaxHighlighter()
+        self.highlighter = SyntaxHighlighter(enable_linking=self.config.enable_linking)
         self.style_manager = StyleManager(theme=self.config.theme)
         self.styles = self.style_manager.get_styles()
 
