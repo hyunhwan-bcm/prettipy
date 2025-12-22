@@ -80,3 +80,38 @@ class TestPrettipyConverter:
 
         assert output_pdf.exists()
         assert output_pdf.stat().st_size > 0
+
+    def test_convert_directory_with_tree(self, tmp_path):
+        """Test that convert_directory creates a PDF with directory tree."""
+        # Create test files
+        (tmp_path / "main.py").write_text("print('main')")
+        subdir = tmp_path / "utils"
+        subdir.mkdir()
+        (subdir / "helper.py").write_text("def helper(): pass")
+
+        output_pdf = tmp_path / "output_with_tree.pdf"
+
+        config = PrettipyConfig(show_directory_tree=True)
+        converter = PrettipyConverter(config)
+        converter.convert_directory(str(tmp_path), str(output_pdf))
+
+        assert output_pdf.exists()
+        assert output_pdf.stat().st_size > 0
+
+    def test_convert_directory_tree_depth(self, tmp_path):
+        """Test directory tree with custom depth."""
+        # Create test files
+        (tmp_path / "main.py").write_text("print('main')")
+        
+        output_pdf = tmp_path / "output_tree_depth.pdf"
+
+        config = PrettipyConfig(
+            show_directory_tree=True,
+            directory_tree_max_depth=2
+        )
+        converter = PrettipyConverter(config)
+        converter.convert_directory(str(tmp_path), str(output_pdf))
+
+        assert output_pdf.exists()
+        assert output_pdf.stat().st_size > 0
+

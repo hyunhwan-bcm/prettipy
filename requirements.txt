@@ -2,6 +2,7 @@
 reportlab>=4.0.0
 pygments>=2.15.0
 networkx>=3.0
+directory-tree>=1.0.0
 
 # Optional dependencies for rich CLI output
 # Install with: pip install -r requirements.txt -r requirements-optional.txt

@@ -16,6 +16,7 @@ from .formatter import CodeFormatter
 from .syntax import SyntaxHighlighter
 from .styles import StyleManager
 from .sorting import sort_files
+from .tree import DirectoryTreeGenerator
 
 
 class PrettipyConverter:
@@ -172,11 +173,46 @@ class PrettipyConverter:
         ))
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 
+        # Add directory tree if enabled
+        if self.config.show_directory_tree:
+            tree_generator = DirectoryTreeGenerator(
+                max_depth=self.config.directory_tree_max_depth
+            )
+            
+            try:
+                # Generate tree with links to file pages
+                tree_html, file_to_anchor = tree_generator.generate_linked_tree_html(
+                    root, files, self.config.exclude_dirs
+                )
+                
+                # Add tree heading
+                story.append(Paragraph(
+                    "<b>📂 Directory Structure</b>",
+                    self.styles['info']
+                ))
+                story.append(Spacer(1, 0.1 * 72))
+                
+                # Add the tree
+                story.append(Paragraph(tree_html, self.styles['tree']))
+                story.append(Spacer(1, 0.2 * 72))
+                
+            except Exception as e:
+                if self.config.verbose:
+                    print(f"Warning: Failed to generate directory tree: {e}")
+
         # If linking is enabled, mark all known definitions as having anchors
         # This allows forward references (linking to a class defined later)
         if self.config.enable_linking and self.highlighter.symbol_tracker:
             for symbol in self.highlighter.symbol_tracker.definitions.keys():
                 self.highlighter.symbol_tracker.mark_anchor_created(symbol)
+
+        # Create anchor mapping for directory tree links
+        file_to_anchor = {}
+        if self.config.show_directory_tree:
+            tree_generator = DirectoryTreeGenerator(
+                max_depth=self.config.directory_tree_max_depth
+            )
+            file_to_anchor = tree_generator.create_file_anchors(files, root)
 
         # Process each file
         for idx, file_path in enumerate(files):
@@ -188,9 +224,20 @@ class PrettipyConverter:
             except ValueError:
                 rel_path = file_path
 
-            # File header with emoji
+            # Get anchor for this file if directory tree is enabled
+            anchor_name = ""
+            if self.config.show_directory_tree and str(rel_path) in file_to_anchor:
+                anchor_name = file_to_anchor[str(rel_path)]
+
+            # File header with emoji and anchor
+            if anchor_name:
+                # Add anchor to the file header so links from tree work
+                file_header_html = f'<a name="{anchor_name}"/>📄 {html.escape(str(rel_path))}'
+            else:
+                file_header_html = f"📄 {html.escape(str(rel_path))}"
+            
             story.append(Paragraph(
-                f"📄 {html.escape(str(rel_path))}",
+                file_header_html,
                 self.styles['file_header']
             ))
 
