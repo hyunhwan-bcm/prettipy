@@ -29,7 +29,7 @@ class PrettipyConverter:
         """
         self.config = config or PrettipyConfig()
         self.formatter = CodeFormatter(max_width=self.config.max_line_width)
-        self.highlighter = SyntaxHighlighter()
+        self.highlighter = SyntaxHighlighter(enable_linking=self.config.enable_linking)
         self.style_manager = StyleManager(theme=self.config.theme)
         self.styles = self.style_manager.get_styles()
 
@@ -136,6 +136,17 @@ class PrettipyConverter:
 
         story = []
 
+        # Pre-analyze all files for linking if enabled
+        if self.config.enable_linking:
+            for file_path in files:
+                try:
+                    code = file_path.read_text(encoding='utf-8')
+                    self.highlighter.prepare_for_linking(code, clear_existing=False)
+                except Exception:
+                    continue
+            # Reset anchors so they can be created during the actual highlighting phase
+            self.highlighter.reset_anchors()
+
         # Title page
         title = self.config.title or f"Python Scripts from {root.name}/"
         story.append(Paragraph(html.escape(title), self.styles['title']))
@@ -148,6 +159,12 @@ class PrettipyConverter:
             self.styles['info']
         ))
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
+
+        # If linking is enabled, mark all known definitions as having anchors
+        # This allows forward references (linking to a class defined later)
+        if self.config.enable_linking and self.highlighter.symbol_tracker:
+            for symbol in self.highlighter.symbol_tracker.definitions.keys():
+                self.highlighter.symbol_tracker.mark_anchor_created(symbol)
 
         # Process each file
         for idx, file_path in enumerate(files):

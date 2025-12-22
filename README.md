@@ -11,6 +11,7 @@ Transform your Python source code into professionally formatted, syntax-highligh
 ## ✨ Features
 
 - 🎨 **Syntax Highlighting**: Beautiful, GitHub-style syntax highlighting using Pygments
+- 🔗 **Auto-linking**: Clickable links from function/variable usage to their declarations (NEW!)
 - 📦 **Smart Line Wrapping**: Intelligently wraps long lines at natural break points
 - 🎯 **Multiple Input Modes**: Convert entire directories or specific files
 - ⚙️ **Highly Configurable**: Customize colors, fonts, page size, and more
@@ -48,6 +49,47 @@ prettipy -o my_code.pdf
 
 # Custom line width
 prettipy -w 100
+
+# Disable auto-linking
+prettipy --no-linking
+```
+
+## 🔗 Auto-linking Feature
+
+Prettipy automatically creates clickable links in the PDF that allow you to navigate from function/variable usage to their declarations. This provides "Go to Definition" style navigation within the PDF document.
+
+### What Gets Linked
+
+- **Function calls** → Function definitions
+- **Variable references** → Variable declarations/assignments
+- **Class instantiations** → Class definitions
+
+### Example
+
+```python
+def calculate_sum(a, b):
+    return a + b
+
+result = calculate_sum(5, 10)  # "calculate_sum" is clickable!
+```
+
+In the generated PDF, clicking on `calculate_sum` in the second line will jump to its definition on the first line.
+
+### Disabling Auto-linking
+
+If you prefer not to have auto-linking, you can disable it:
+
+```bash
+# Command line
+prettipy --no-linking
+
+# Configuration file
+{
+  "enable_linking": false
+}
+
+# Python API
+config = PrettipyConfig(enable_linking=False)
 ```
 
 ## 📖 Detailed Usage
@@ -57,8 +99,8 @@ prettipy -w 100
 ```bash
 usage: prettipy [-h] [-o OUTPUT] [-f FILES [FILES ...]] [-w WIDTH]
                 [--config CONFIG] [-t TITLE] [--theme {default}]
-                [--page-size {letter,a4}] [-v] [--version] [--init-config]
-                [directory]
+                [--page-size {letter,a4}] [--no-linking] [-v] [--version]
+                [--init-config] [directory]
 
 Convert Python code to beautifully formatted PDFs
 
@@ -75,6 +117,7 @@ optional arguments:
   --theme {default}     Color theme to use
   --page-size {letter,a4}
                         PDF page size (default: letter)
+  --no-linking          Disable auto-linking to function/variable definitions
   -v, --verbose         Enable verbose output
   --version             Show program's version number and exit
   --init-config         Generate a sample configuration file
@@ -174,6 +217,7 @@ This creates `prettipy-config.json`:
   "title": null,
   "show_line_numbers": false,
   "theme": "default",
+  "enable_linking": true,
   "output_file": "output.pdf",
   "verbose": false
 }
@@ -193,6 +237,7 @@ This creates `prettipy-config.json`:
 | `title` | string | `null` | PDF title |
 | `show_line_numbers` | bool | `false` | Show line numbers (future) |
 | `theme` | string | `"default"` | Color theme |
+| `enable_linking` | bool | `true` | Enable auto-linking to definitions |
 | `output_file` | string | `"output.pdf"` | Default output path |
 | `verbose` | bool | `false` | Verbose output |
 

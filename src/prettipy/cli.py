@@ -107,6 +107,12 @@ For more information, visit: https://github.com/yourusername/prettipy
             default='letter',
             help='PDF page size (default: letter)'
         )
+        
+        parser.add_argument(
+            '--no-linking',
+            action='store_true',
+            help='Disable auto-linking to function/variable definitions'
+        )
 
         parser.add_argument(
             '-v', '--verbose',
@@ -206,6 +212,9 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.verbose = args.verbose
             config.theme = args.theme
             config.page_size = args.page_size
+            
+            if args.no_linking:
+                config.enable_linking = False
 
             if args.title:
                 config.title = args.title

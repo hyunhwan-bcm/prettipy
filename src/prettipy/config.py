@@ -38,6 +38,9 @@ class PrettipyConfig:
 
     # Theme
     theme: str = 'default'
+    
+    # Linking
+    enable_linking: bool = True
 
     # Output
     output_file: str = 'output.pdf'
@@ -85,6 +88,7 @@ class PrettipyConfig:
             'title': self.title,
             'show_line_numbers': self.show_line_numbers,
             'theme': self.theme,
+            'enable_linking': self.enable_linking,
             'output_file': self.output_file,
             'verbose': self.verbose
         }
