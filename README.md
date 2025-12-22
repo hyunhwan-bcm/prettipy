@@ -339,11 +339,33 @@ pytest
 pytest --cov=prettipy  # With coverage
 ```
 
+### Pre-commit Hooks
+
+Install pre-commit hooks to automatically check code quality before commits:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install the hooks
+pre-commit install
+
+# Run manually on all files (optional)
+pre-commit run --all-files
+```
+
+Pre-commit will automatically run:
+- **Black** formatter to ensure consistent code style
+- **Pytest** to verify all tests pass
+
 ### Code Quality
 
 ```bash
 # Format code
-black src/prettipy
+black .
+
+# Check formatting without changes
+black --check .
 
 # Lint
 flake8 src/prettipy
@@ -351,6 +373,13 @@ flake8 src/prettipy
 # Type checking
 mypy src/prettipy
 ```
+
+### Continuous Integration
+
+GitHub Actions automatically runs on all pushes and pull requests:
+- Tests on Python 3.8-3.12
+- Black formatting checks
+- All checks must pass before merging
 
 ## 📦 Building and Publishing
 
