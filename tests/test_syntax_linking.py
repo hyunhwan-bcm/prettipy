@@ -34,6 +34,9 @@ result = calculate_sum(5, 10)"""
         # Prepare for linking
         highlighter.prepare_for_linking(code)
         
+        # Mark that the anchor will be created (simulate pre-marking phase)
+        highlighter.symbol_tracker.mark_anchor_created('calculate_sum')
+        
         # Highlight the definition line first (to create anchor)
         highlighter.highlight_line("def calculate_sum(a, b):")
         

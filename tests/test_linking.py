@@ -59,7 +59,7 @@ def test_func():
         
         # First call should return True
         assert tracker.should_create_anchor('test_func')
-        tracker.mark_anchor_created('test_func')
+        tracker.mark_anchor_placed('test_func')
         # Second call should return False
         assert not tracker.should_create_anchor('test_func')
 

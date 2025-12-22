@@ -126,7 +126,7 @@ class SyntaxHighlighter:
                 
                 if is_def and self.symbol_tracker.should_create_anchor(name):
                     # This is the definition - add anchor
-                    self.symbol_tracker.mark_anchor_created(name)
+                    self.symbol_tracker.mark_anchor_placed(name)
                     anchor_name = self.symbol_tracker.get_anchor_name(name)
                     if color and token_value.strip():
                         return f'<a name="{anchor_name}"></a><font color="{color}">{escaped}</font>'
@@ -165,11 +165,12 @@ class SyntaxHighlighter:
         if token_idx > 0:
             for i in range(token_idx - 1, max(-1, token_idx - self.MAX_LOOKBACK_TOKENS), -1):
                 token_type, token_value = tokens[i]
+                
                 # Skip whitespace
                 if token_type in Token.Text:
                     continue
-                # Check for def or class
-                if token_type in Token.Keyword:
+                # Check for def or class (but not constants like True/False/None)
+                if token_type in Token.Keyword and token_type not in Token.Keyword.Constant:
                     if token_value in ('def', 'class'):
                         return True
                     # If we hit another keyword, it's not a definition
@@ -180,6 +181,7 @@ class SyntaxHighlighter:
         # Look forward for '=' (assignment)
         for i in range(token_idx + 1, min(len(tokens), token_idx + self.MAX_LOOKAHEAD_TOKENS)):
             token_type, token_value = tokens[i]
+            
             # Skip whitespace
             if token_type in Token.Text:
                 continue

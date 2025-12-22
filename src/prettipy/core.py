@@ -160,6 +160,12 @@ class PrettipyConverter:
         ))
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 
+        # If linking is enabled, mark all known definitions as having anchors
+        # This allows forward references (linking to a class defined later)
+        if self.config.enable_linking and self.highlighter.symbol_tracker:
+            for symbol in self.highlighter.symbol_tracker.definitions.keys():
+                self.highlighter.symbol_tracker.mark_anchor_created(symbol)
+
         # Process each file
         for idx, file_path in enumerate(files):
             if idx > 0:
@@ -194,6 +200,8 @@ class PrettipyConverter:
                     f'<i>{error_msg}</i>',
                     self.styles['error']
                 ))
+
+        # Build PDF
 
         # Build PDF
         doc.build(story)

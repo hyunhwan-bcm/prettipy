@@ -19,12 +19,15 @@ class SymbolTracker:
         self.lexer = PythonLexer()
         # Maps symbol names to their types ('function', 'class', 'variable')
         self.definitions: Dict[str, str] = {}
-        # Track which symbols have been used to avoid duplicate anchors
+        # Track which symbols have been marked as having anchors (for link creation)
         self.anchors_created: Set[str] = set()
+        # Track which symbols have actually had anchors placed in the HTML output
+        self.anchors_placed: Set[str] = set()
 
     def clear_anchors(self) -> None:
         """Clear the set of created anchors. Use this before processing a new document."""
         self.anchors_created.clear()
+        self.anchors_placed.clear()
 
     def analyze_code(self, code: str) -> None:
         """
@@ -52,6 +55,23 @@ class SymbolTracker:
             
             # Look for variable assignments (simple heuristic)
             elif token_type in Token.Name and i + 1 < len(tokens):
+                # Skip if this is part of an import statement
+                # Look backward for 'import' or 'from' keywords on the same logical line
+                is_import = False
+                for j in range(i - 1, max(-1, i - 10), -1):
+                    # Stop at newlines (end of logical line)
+                    if tokens[j][0] in Token.Text.Whitespace and '\n' in tokens[j][1]:
+                        break
+                    if tokens[j][0] in Token.Keyword:
+                        if tokens[j][1] in ('import', 'from'):
+                            is_import = True
+                            break
+                        # If we hit another keyword, it's not an import
+                        break
+                
+                if is_import:
+                    continue
+                
                 # Check if next non-whitespace token is '='
                 next_idx = i + 1
                 while next_idx < len(tokens) and tokens[next_idx][0] in Token.Text:
@@ -112,16 +132,25 @@ class SymbolTracker:
         Returns:
             True if anchor should be created
         """
-        return name in self.definitions and name not in self.anchors_created
+        return name in self.definitions and name not in self.anchors_placed
 
     def mark_anchor_created(self, name: str) -> None:
         """
-        Mark an anchor as created for a symbol.
+        Mark an anchor as will-be-created (for link creation).
 
         Args:
             name: Symbol name
         """
         self.anchors_created.add(name)
+    
+    def mark_anchor_placed(self, name: str) -> None:
+        """
+        Mark an anchor as actually placed in HTML output.
+
+        Args:
+            name: Symbol name
+        """
+        self.anchors_placed.add(name)
 
     def is_anchor_created(self, name: str) -> bool:
         """
