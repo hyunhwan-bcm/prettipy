@@ -6,7 +6,7 @@ package and creating clickable links from tree nodes to file pages in the PDF.
 """
 
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import sys
 from io import StringIO
 from directory_tree import DisplayTree
@@ -101,7 +101,7 @@ class DirectoryTreeGenerator:
         root_path: Path,
         files: List[Path],
         exclude_dirs: set = None
-    ) -> tuple[str, Dict[str, str]]:
+    ) -> Tuple[str, Dict[str, str]]:
         """
         Generate HTML representation of the tree with clickable links.
 

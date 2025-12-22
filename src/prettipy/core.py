@@ -173,6 +173,9 @@ class PrettipyConverter:
         ))
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 
+        # Create anchor mapping for directory tree links
+        file_to_anchor = {}
+        
         # Add directory tree if enabled
         if self.config.show_directory_tree:
             tree_generator = DirectoryTreeGenerator(
@@ -206,14 +209,6 @@ class PrettipyConverter:
             for symbol in self.highlighter.symbol_tracker.definitions.keys():
                 self.highlighter.symbol_tracker.mark_anchor_created(symbol)
 
-        # Create anchor mapping for directory tree links
-        file_to_anchor = {}
-        if self.config.show_directory_tree:
-            tree_generator = DirectoryTreeGenerator(
-                max_depth=self.config.directory_tree_max_depth
-            )
-            file_to_anchor = tree_generator.create_file_anchors(files, root)
-
         # Process each file
         for idx, file_path in enumerate(files):
             if idx > 0:
@@ -225,9 +220,7 @@ class PrettipyConverter:
                 rel_path = file_path
 
             # Get anchor for this file if directory tree is enabled
-            anchor_name = ""
-            if self.config.show_directory_tree and str(rel_path) in file_to_anchor:
-                anchor_name = file_to_anchor[str(rel_path)]
+            anchor_name = file_to_anchor.get(str(rel_path), '') if self.config.show_directory_tree else ''
 
             # File header with emoji and anchor
             if anchor_name:
