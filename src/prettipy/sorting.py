@@ -7,7 +7,6 @@ This module provides different methods for sorting Python files:
 """
 
 import ast
-import re
 from pathlib import Path
 from typing import List, Dict, Set
 import networkx as nx
@@ -186,7 +185,7 @@ def sort_files(files: List[Path], method: str = 'lexicographic') -> List[Path]:
                    circular dependencies are detected with dependency sorting
     """
     if method == 'none':
-        return files
+        return list(files)  # Return a copy to prevent mutations
     
     sorter = FileSorter()
     
