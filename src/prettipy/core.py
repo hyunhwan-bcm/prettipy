@@ -136,6 +136,17 @@ class PrettipyConverter:
 
         story = []
 
+        # Pre-analyze all files for linking if enabled
+        if self.config.enable_linking:
+            for file_path in files:
+                try:
+                    code = file_path.read_text(encoding='utf-8')
+                    self.highlighter.prepare_for_linking(code, clear_existing=False)
+                except Exception:
+                    continue
+            # Reset anchors so they can be created during the actual highlighting phase
+            self.highlighter.reset_anchors()
+
         # Title page
         title = self.config.title or f"Python Scripts from {root.name}/"
         story.append(Paragraph(html.escape(title), self.styles['title']))
@@ -168,9 +179,6 @@ class PrettipyConverter:
             # Process file content
             try:
                 code = file_path.read_text(encoding='utf-8')
-                
-                # Prepare highlighter for linking by analyzing the code first
-                self.highlighter.prepare_for_linking(code)
                 
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs

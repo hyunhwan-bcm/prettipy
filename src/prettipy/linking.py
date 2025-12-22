@@ -22,6 +22,10 @@ class SymbolTracker:
         # Track which symbols have been used to avoid duplicate anchors
         self.anchors_created: Set[str] = set()
 
+    def clear_anchors(self) -> None:
+        """Clear the set of created anchors. Use this before processing a new document."""
+        self.anchors_created.clear()
+
     def analyze_code(self, code: str) -> None:
         """
         Analyze code to find all function, class, and variable definitions.
@@ -108,10 +112,28 @@ class SymbolTracker:
         Returns:
             True if anchor should be created
         """
-        if name in self.definitions and name not in self.anchors_created:
-            self.anchors_created.add(name)
-            return True
-        return False
+        return name in self.definitions and name not in self.anchors_created
+
+    def mark_anchor_created(self, name: str) -> None:
+        """
+        Mark an anchor as created for a symbol.
+
+        Args:
+            name: Symbol name
+        """
+        self.anchors_created.add(name)
+
+    def is_anchor_created(self, name: str) -> bool:
+        """
+        Check if an anchor has been created for this symbol.
+
+        Args:
+            name: Symbol name
+
+        Returns:
+            True if anchor has been created
+        """
+        return name in self.anchors_created
 
     def get_anchor_name(self, name: str) -> str:
         """

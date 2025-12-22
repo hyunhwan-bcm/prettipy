@@ -49,16 +49,24 @@ class SyntaxHighlighter:
         self.enable_linking = enable_linking
         self.symbol_tracker: Optional[SymbolTracker] = None
     
-    def prepare_for_linking(self, code: str) -> None:
+    def prepare_for_linking(self, code: str, clear_existing: bool = True) -> None:
         """
         Prepare the highlighter for auto-linking by analyzing the code.
         
         Args:
             code: The complete code to analyze for symbols
+            clear_existing: Whether to clear existing definitions
         """
         if self.enable_linking:
-            self.symbol_tracker = SymbolTracker()
+            if self.symbol_tracker is None or clear_existing:
+                self.symbol_tracker = SymbolTracker()
+            
             self.symbol_tracker.analyze_code(code)
+
+    def reset_anchors(self) -> None:
+        """Reset the anchor tracking to allow creating anchors in a new document."""
+        if self.symbol_tracker:
+            self.symbol_tracker.clear_anchors()
 
     def highlight_line(self, line: str) -> str:
         """
@@ -118,16 +126,21 @@ class SyntaxHighlighter:
                 
                 if is_def and self.symbol_tracker.should_create_anchor(name):
                     # This is the definition - add anchor
+                    self.symbol_tracker.mark_anchor_created(name)
                     anchor_name = self.symbol_tracker.get_anchor_name(name)
                     if color and token_value.strip():
-                        return f'<a name="{anchor_name}"/><font color="{color}">{escaped}</font>'
-                    return f'<a name="{anchor_name}"/>{escaped}'
+                        return f'<a name="{anchor_name}"></a><font color="{color}">{escaped}</font>'
+                    return f'<a name="{anchor_name}"></a>{escaped}'
                 elif not is_def:
                     # This is a reference - add link
                     anchor_name = self.symbol_tracker.get_anchor_name(name)
-                    if color and token_value.strip():
-                        return f'<font color="{color}"><a href="#{anchor_name}">{escaped}</a></font>'
-                    return f'<a href="#{anchor_name}">{escaped}</a>'
+                    
+                    # Only create link if the anchor has been or will be created
+                    # This prevents "format not resolved" errors in ReportLab
+                    if name in self.symbol_tracker.definitions and self.symbol_tracker.is_anchor_created(name):
+                        if color and token_value.strip():
+                            return f'<font color="{color}"><a href="#{anchor_name}">{escaped}</a></font>'
+                        return f'<a href="#{anchor_name}">{escaped}</a>'
 
         # No linking - just apply color
         if color and token_value.strip():

@@ -8,6 +8,7 @@ src/prettipy/cli.py
 src/prettipy/config.py
 src/prettipy/core.py
 src/prettipy/formatter.py
+src/prettipy/linking.py
 src/prettipy/styles.py
 src/prettipy/syntax.py
 src/prettipy.egg-info/PKG-INFO
@@ -19,4 +20,6 @@ src/prettipy.egg-info/top_level.txt
 tests/test_config.py
 tests/test_core.py
 tests/test_formatter.py
+tests/test_linking.py
 tests/test_syntax.py
+tests/test_syntax_linking.py

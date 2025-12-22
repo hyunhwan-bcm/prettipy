@@ -20,7 +20,7 @@ class TestSyntaxHighlighterLinking:
         result = highlighter.highlight_line("def calculate_sum(a, b):")
         
         # Should contain an anchor tag
-        assert '<a name="def_calculate_sum"/>' in result
+        assert '<a name="def_calculate_sum"></a>' in result
         assert 'calculate_sum' in result
 
     def test_function_call_gets_link(self):
@@ -58,7 +58,7 @@ obj = MyClass()"""
         result = highlighter.highlight_line("class MyClass:")
         
         # Should contain an anchor tag
-        assert '<a name="def_MyClass"/>' in result
+        assert '<a name="def_MyClass"></a>' in result
 
     def test_variable_assignment_gets_anchor(self):
         """Test that variable assignments get anchor tags."""
@@ -73,7 +73,7 @@ print(my_var)"""
         result = highlighter.highlight_line("my_var = 42")
         
         # Should contain an anchor tag
-        assert '<a name="def_my_var"/>' in result
+        assert '<a name="def_my_var"></a>' in result
 
     def test_linking_disabled(self):
         """Test that linking can be disabled."""
@@ -100,7 +100,7 @@ print(my_var)"""
         # Should still have color tags
         assert '<font color=' in result
         # And should have anchor
-        assert '<a name="def_my_function"/>' in result
+        assert '<a name="def_my_function"></a>' in result
 
     def test_no_false_positives_in_strings(self):
         """Test that function names in strings are not linked."""
