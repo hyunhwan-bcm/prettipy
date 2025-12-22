@@ -202,8 +202,6 @@ class PrettipyConverter:
                 ))
 
         # Build PDF
-
-        # Build PDF
         doc.build(story)
 
         print(f"✓ Created {output_path} with {len(files)} files")
