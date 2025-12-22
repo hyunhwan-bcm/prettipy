@@ -43,7 +43,7 @@ class PrettipyConfig:
     enable_linking: bool = True
 
     # Sorting
-    sort_method: str = 'lexicographic'  # 'dependency', 'lexicographic', or 'none'
+    sort_method: str = 'dependency'  # 'dependency', 'lexicographic', or 'none'
 
     # Output
     output_file: str = 'output.pdf'
