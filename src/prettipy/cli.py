@@ -46,12 +46,15 @@ class CLI:
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
-  prettipy                          # Convert current directory
-  prettipy /path/to/project         # Convert specific directory
-  prettipy -o output.pdf            # Specify output file
-  prettipy -f file1.py file2.py     # Convert specific files
-  prettipy -w 100                   # Set max line width to 100
-  prettipy --config my-config.json  # Use custom configuration
+  prettipy                             # Convert current directory
+  prettipy /path/to/project            # Convert specific directory
+  prettipy -o output.pdf               # Specify output file
+  prettipy -f file1.py file2.py        # Convert specific files
+  prettipy -w 100                      # Set max line width to 100
+  prettipy --config my-config.json     # Use custom configuration
+  prettipy --sort dependency           # Sort files by dependencies
+  prettipy --sort lexicographic        # Sort files alphabetically
+  prettipy --sort none                 # No sorting (discovery order)
 
 For more information, visit: https://github.com/yourusername/prettipy
             """
@@ -112,6 +115,14 @@ For more information, visit: https://github.com/yourusername/prettipy
             '--no-linking',
             action='store_true',
             help='Disable auto-linking to function/variable definitions'
+        )
+
+        parser.add_argument(
+            '--sort',
+            choices=['dependency', 'lexicographic', 'none'],
+            default='lexicographic',
+            help='File sorting method: dependency (by function calls), '
+                 'lexicographic (alphabetical), or none (default: lexicographic)'
         )
 
         parser.add_argument(
@@ -212,6 +223,7 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.verbose = args.verbose
             config.theme = args.theme
             config.page_size = args.page_size
+            config.sort_method = args.sort
             
             if args.no_linking:
                 config.enable_linking = False

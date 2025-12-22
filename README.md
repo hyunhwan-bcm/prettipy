@@ -92,6 +92,51 @@ prettipy --no-linking
 config = PrettipyConfig(enable_linking=False)
 ```
 
+## 📂 File Sorting
+
+Prettipy provides flexible options for sorting files in the generated PDF:
+
+### Sorting Methods
+
+1. **Lexicographic (Alphabetical)** - Default method that sorts files alphabetically by filename
+2. **Dependency-Based** - Sorts files based on function call dependencies using topological sort
+3. **None** - No sorting, files appear in discovery order
+
+### Dependency-Based Sorting
+
+The dependency sorting method analyzes your Python files to understand which files depend on others:
+
+- Files are treated as nodes in a Directed Acyclic Graph (DAG)
+- Dependencies are determined by analyzing function and class calls between files
+- Files with no dependencies appear first
+- Files that depend on others appear after their dependencies
+- When multiple files are at the same dependency level, they are sorted alphabetically
+- Uses NetworkX library for robust topological sorting
+
+**Example:**
+```bash
+# Sort by dependencies - files with dependencies appear after their dependencies
+prettipy --sort dependency
+
+# Sort alphabetically (default)
+prettipy --sort lexicographic
+
+# No sorting - files in discovery order
+prettipy --sort none
+```
+
+**Note:** If circular dependencies are detected during dependency sorting, the tool will display a warning and fall back to lexicographic sorting.
+
+### Configuration File
+
+You can also set the sorting method in your configuration file:
+
+```json
+{
+  "sort_method": "dependency"
+}
+```
+
 ## 📖 Detailed Usage
 
 ### Command Line Interface
@@ -99,7 +144,8 @@ config = PrettipyConfig(enable_linking=False)
 ```bash
 usage: prettipy [-h] [-o OUTPUT] [-f FILES [FILES ...]] [-w WIDTH]
                 [--config CONFIG] [-t TITLE] [--theme {default}]
-                [--page-size {letter,a4}] [--no-linking] [-v] [--version]
+                [--page-size {letter,a4}] [--no-linking]
+                [--sort {dependency,lexicographic,none}] [-v] [--version]
                 [--init-config] [directory]
 
 Convert Python code to beautifully formatted PDFs
@@ -118,6 +164,8 @@ optional arguments:
   --page-size {letter,a4}
                         PDF page size (default: letter)
   --no-linking          Disable auto-linking to function/variable definitions
+  --sort {dependency,lexicographic,none}
+                        File sorting method (default: lexicographic)
   -v, --verbose         Enable verbose output
   --version             Show program's version number and exit
   --init-config         Generate a sample configuration file
@@ -149,6 +197,16 @@ prettipy /path/to/project \
 prettipy -f main.py utils.py models.py -o core_files.pdf
 ```
 
+#### Sort Files by Dependencies
+
+```bash
+# Automatically organize files so dependencies come before files that use them
+prettipy --sort dependency -o organized_code.pdf
+
+# Combine with other options
+prettipy /path/to/project --sort dependency --page-size a4 -o sorted_project.pdf
+```
+
 #### Use Configuration File
 
 ```bash
@@ -175,6 +233,7 @@ config = PrettipyConfig(
     max_line_width=100,
     page_size='a4',
     title='My Project Documentation',
+    sort_method='dependency',  # Sort files by dependencies
     verbose=True
 )
 
@@ -218,6 +277,7 @@ This creates `prettipy-config.json`:
   "show_line_numbers": false,
   "theme": "default",
   "enable_linking": true,
+  "sort_method": "lexicographic",
   "output_file": "output.pdf",
   "verbose": false
 }
@@ -238,6 +298,7 @@ This creates `prettipy-config.json`:
 | `show_line_numbers` | bool | `false` | Show line numbers (future) |
 | `theme` | string | `"default"` | Color theme |
 | `enable_linking` | bool | `true` | Enable auto-linking to definitions |
+| `sort_method` | string | `"lexicographic"` | File sorting method (dependency/lexicographic/none) |
 | `output_file` | string | `"output.pdf"` | Default output path |
 | `verbose` | bool | `false` | Verbose output |
 

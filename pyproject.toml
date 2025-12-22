@@ -30,6 +30,7 @@ keywords = ["pdf", "python", "syntax-highlighting", "documentation", "code-to-pd
 dependencies = [
     "reportlab>=4.0.0",
     "pygments>=2.15.0",
+    "networkx>=3.0",
 ]
 
 [project.optional-dependencies]

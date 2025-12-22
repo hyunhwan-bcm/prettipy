@@ -15,6 +15,7 @@ from .config import PrettipyConfig
 from .formatter import CodeFormatter
 from .syntax import SyntaxHighlighter
 from .styles import StyleManager
+from .sorting import sort_files
 
 
 class PrettipyConverter:
@@ -41,7 +42,7 @@ class PrettipyConverter:
             directory: Root directory to search
 
         Returns:
-            List of Path objects for Python files
+            List of Path objects for Python files, sorted according to config
         """
         py_files = []
 
@@ -50,7 +51,17 @@ class PrettipyConverter:
                 if not self.config.should_exclude_path(file_path):
                     py_files.append(file_path)
 
-        return sorted(py_files)
+        # Apply sorting based on configuration
+        try:
+            sorted_files = sort_files(py_files, method=self.config.sort_method)
+            return sorted_files
+        except ValueError as e:
+            # If dependency sorting fails (e.g., circular dependencies),
+            # fall back to lexicographic sorting
+            if self.config.verbose:
+                print(f"Warning: {e}")
+                print("Falling back to lexicographic sorting")
+            return sort_files(py_files, method='lexicographic')
 
     def convert_directory(self, directory: str = ".", output: Optional[str] = None):
         """

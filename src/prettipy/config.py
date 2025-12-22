@@ -42,6 +42,9 @@ class PrettipyConfig:
     # Linking
     enable_linking: bool = True
 
+    # Sorting
+    sort_method: str = 'lexicographic'  # 'dependency', 'lexicographic', or 'none'
+
     # Output
     output_file: str = 'output.pdf'
     verbose: bool = False
@@ -89,6 +92,7 @@ class PrettipyConfig:
             'show_line_numbers': self.show_line_numbers,
             'theme': self.theme,
             'enable_linking': self.enable_linking,
+            'sort_method': self.sort_method,
             'output_file': self.output_file,
             'verbose': self.verbose
         }
