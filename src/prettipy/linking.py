@@ -37,22 +37,22 @@ class SymbolTracker:
             code: The complete code to analyze
         """
         tokens = list(lex(code, self.lexer))
-        
+
         for i, (token_type, token_value) in enumerate(tokens):
             # Look for function definitions
-            if token_type in Token.Keyword and token_value == 'def':
+            if token_type in Token.Keyword and token_value == "def":
                 # Next non-whitespace token should be the function name
                 func_name = self._get_next_name_token(tokens, i)
                 if func_name:
-                    self.definitions[func_name] = 'function'
-            
+                    self.definitions[func_name] = "function"
+
             # Look for class definitions
-            elif token_type in Token.Keyword and token_value == 'class':
+            elif token_type in Token.Keyword and token_value == "class":
                 # Next non-whitespace token should be the class name
                 class_name = self._get_next_name_token(tokens, i)
                 if class_name:
-                    self.definitions[class_name] = 'class'
-            
+                    self.definitions[class_name] = "class"
+
             # Look for variable assignments (simple heuristic)
             elif token_type in Token.Name and i + 1 < len(tokens):
                 # Skip if this is part of an import statement
@@ -60,30 +60,30 @@ class SymbolTracker:
                 is_import = False
                 for j in range(i - 1, max(-1, i - 10), -1):
                     # Stop at newlines (end of logical line)
-                    if tokens[j][0] in Token.Text.Whitespace and '\n' in tokens[j][1]:
+                    if tokens[j][0] in Token.Text.Whitespace and "\n" in tokens[j][1]:
                         break
                     if tokens[j][0] in Token.Keyword:
-                        if tokens[j][1] in ('import', 'from'):
+                        if tokens[j][1] in ("import", "from"):
                             is_import = True
                             break
                         # If we hit another keyword, it's not an import
                         break
-                
+
                 if is_import:
                     continue
-                
+
                 # Check if next non-whitespace token is '='
                 next_idx = i + 1
                 while next_idx < len(tokens) and tokens[next_idx][0] in Token.Text:
                     next_idx += 1
-                
-                if next_idx < len(tokens) and tokens[next_idx][1] == '=':
+
+                if next_idx < len(tokens) and tokens[next_idx][1] == "=":
                     # Don't track very common names or private names
-                    if not token_value.startswith('_') and len(token_value) > 1:
+                    if not token_value.startswith("_") and len(token_value) > 1:
                         # Only track if it's at module level or clear assignment
                         # This is a simple heuristic to avoid false positives
                         if token_value not in self.definitions:
-                            self.definitions[token_value] = 'variable'
+                            self.definitions[token_value] = "variable"
 
     def _get_next_name_token(self, tokens: List[Tuple], start_idx: int) -> str:
         """
@@ -106,7 +106,7 @@ class SymbolTracker:
                 return token_value
             # If we hit something else, stop looking
             break
-        return ''
+        return ""
 
     def is_definition(self, name: str) -> bool:
         """
@@ -142,7 +142,7 @@ class SymbolTracker:
             name: Symbol name
         """
         self.anchors_created.add(name)
-    
+
     def mark_anchor_placed(self, name: str) -> None:
         """
         Mark an anchor as actually placed in HTML output.
@@ -177,5 +177,6 @@ class SymbolTracker:
         # Sanitize the name to be safe for HTML attributes
         # Replace any non-alphanumeric characters (except underscore) with underscore
         import re
-        sanitized = re.sub(r'[^a-zA-Z0-9_]', '_', name)
+
+        sanitized = re.sub(r"[^a-zA-Z0-9_]", "_", name)
         return f"def_{sanitized}"

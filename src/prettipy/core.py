@@ -53,8 +53,9 @@ class PrettipyConverter:
 
         # Apply sorting based on configuration
         try:
-            sorted_files = sort_files(py_files, method=self.config.sort_method, 
-                                     reverse_deps=self.config.reverse_deps)
+            sorted_files = sort_files(
+                py_files, method=self.config.sort_method, reverse_deps=self.config.reverse_deps
+            )
             return sorted_files
         except ValueError as e:
             # If dependency sorting fails (e.g., circular dependencies),
@@ -62,7 +63,7 @@ class PrettipyConverter:
             if self.config.verbose:
                 print(f"Warning: {e}")
                 print("Falling back to lexicographic sorting")
-            return sort_files(py_files, method='lexicographic')
+            return sort_files(py_files, method="lexicographic")
 
     def convert_directory(self, directory: str = ".", output: Optional[str] = None):
         """
@@ -133,7 +134,7 @@ class PrettipyConverter:
             output_path: Output PDF file path
         """
         # Page size
-        page_size = A4 if self.config.page_size.lower() == 'a4' else letter
+        page_size = A4 if self.config.page_size.lower() == "a4" else letter
 
         # Create document
         margins = self.style_manager.get_page_margins()
@@ -143,7 +144,7 @@ class PrettipyConverter:
             topMargin=margins[0],
             bottomMargin=margins[1],
             leftMargin=margins[2],
-            rightMargin=margins[3]
+            rightMargin=margins[3],
         )
 
         story = []
@@ -152,7 +153,7 @@ class PrettipyConverter:
         if self.config.enable_linking:
             for file_path in files:
                 try:
-                    code = file_path.read_text(encoding='utf-8')
+                    code = file_path.read_text(encoding="utf-8")
                     self.highlighter.prepare_for_linking(code, clear_existing=False)
                 except Exception:
                     continue
@@ -161,15 +162,11 @@ class PrettipyConverter:
 
         # Title page
         title = self.config.title or f"Python Scripts from {root.name}/"
-        story.append(Paragraph(html.escape(title), self.styles['title']))
-        story.append(Paragraph(
-            f"<b>Total files:</b> {len(files)}",
-            self.styles['info']
-        ))
-        story.append(Paragraph(
-            f"<b>Generated from:</b> {html.escape(str(root))}",
-            self.styles['info']
-        ))
+        story.append(Paragraph(html.escape(title), self.styles["title"]))
+        story.append(Paragraph(f"<b>Total files:</b> {len(files)}", self.styles["info"]))
+        story.append(
+            Paragraph(f"<b>Generated from:</b> {html.escape(str(root))}", self.styles["info"])
+        )
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 
         # If linking is enabled, mark all known definitions as having anchors
@@ -189,29 +186,23 @@ class PrettipyConverter:
                 rel_path = file_path
 
             # File header with emoji
-            story.append(Paragraph(
-                f"📄 {html.escape(str(rel_path))}",
-                self.styles['file_header']
-            ))
+            story.append(Paragraph(f"📄 {html.escape(str(rel_path))}", self.styles["file_header"]))
 
             # Process file content
             try:
-                code = file_path.read_text(encoding='utf-8')
-                
+                code = file_path.read_text(encoding="utf-8")
+
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs
                 highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
-                
+
                 # Create code block
-                full_code_html = '<br/>'.join(highlighted_lines)
-                story.append(Paragraph(full_code_html, self.styles['code']))
+                full_code_html = "<br/>".join(highlighted_lines)
+                story.append(Paragraph(full_code_html, self.styles["code"]))
 
             except Exception as e:
-                error_msg = f'Error reading file: {html.escape(str(e))}'
-                story.append(Paragraph(
-                    f'<i>{error_msg}</i>',
-                    self.styles['error']
-                ))
+                error_msg = f"Error reading file: {html.escape(str(e))}"
+                story.append(Paragraph(f"<i>{error_msg}</i>", self.styles["error"]))
 
         # Build PDF
         doc.build(story)

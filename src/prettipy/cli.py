@@ -15,6 +15,7 @@ try:
     from rich.panel import Panel
     from rich.table import Table
     from rich import print as rprint
+
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
@@ -41,8 +42,8 @@ class CLI:
             Configured ArgumentParser instance
         """
         parser = argparse.ArgumentParser(
-            prog='prettipy',
-            description='Convert Python code to beautifully formatted PDFs',
+            prog="prettipy",
+            description="Convert Python code to beautifully formatted PDFs",
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
@@ -57,91 +58,72 @@ Examples:
   prettipy --sort none                 # No sorting (discovery order)
 
 For more information, visit: https://github.com/yourusername/prettipy
-            """
+            """,
         )
 
         parser.add_argument(
-            'directory',
-            nargs='?',
-            default='.',
-            help='Directory to scan for Python files (default: current directory)'
+            "directory",
+            nargs="?",
+            default=".",
+            help="Directory to scan for Python files (default: current directory)",
         )
 
         parser.add_argument(
-            '-o', '--output',
-            default='output.pdf',
-            help='Output PDF file path (default: output.pdf)'
+            "-o",
+            "--output",
+            default="output.pdf",
+            help="Output PDF file path (default: output.pdf)",
         )
 
-        parser.add_argument(
-            '-f', '--files',
-            nargs='+',
-            help='Specific Python files to convert'
-        )
+        parser.add_argument("-f", "--files", nargs="+", help="Specific Python files to convert")
 
         parser.add_argument(
-            '-w', '--width',
+            "-w",
+            "--width",
             type=int,
             default=90,
-            help='Maximum line width before wrapping (default: 90)'
+            help="Maximum line width before wrapping (default: 90)",
+        )
+
+        parser.add_argument("--config", type=Path, help="Path to configuration JSON file")
+
+        parser.add_argument("-t", "--title", help="Custom title for the PDF document")
+
+        parser.add_argument(
+            "--theme",
+            choices=["default"],
+            default="default",
+            help="Color theme to use (default: default)",
         )
 
         parser.add_argument(
-            '--config',
-            type=Path,
-            help='Path to configuration JSON file'
+            "--page-size",
+            choices=["letter", "a4"],
+            default="letter",
+            help="PDF page size (default: letter)",
         )
 
         parser.add_argument(
-            '-t', '--title',
-            help='Custom title for the PDF document'
+            "--no-linking",
+            action="store_true",
+            help="Disable auto-linking to function/variable definitions",
         )
 
         parser.add_argument(
-            '--theme',
-            choices=['default'],
-            default='default',
-            help='Color theme to use (default: default)'
+            "--sort",
+            choices=["dependency", "dependency-rev", "lexicographic", "none"],
+            default="dependency",
+            help="File sorting method: dependency (providers first), dependency-rev "
+            "(dependents first), lexicographic (alphabetical), or none "
+            "(default: dependency)",
         )
 
-        parser.add_argument(
-            '--page-size',
-            choices=['letter', 'a4'],
-            default='letter',
-            help='PDF page size (default: letter)'
-        )
-        
-        parser.add_argument(
-            '--no-linking',
-            action='store_true',
-            help='Disable auto-linking to function/variable definitions'
-        )
+        parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+
+        parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
         parser.add_argument(
-            '--sort',
-            choices=['dependency', 'dependency-rev', 'lexicographic', 'none'],
-            default='dependency',
-            help='File sorting method: dependency (providers first), dependency-rev '
-                 '(dependents first), lexicographic (alphabetical), or none '
-                 '(default: dependency)'
-        )
-
-        parser.add_argument(
-            '-v', '--verbose',
-            action='store_true',
-            help='Enable verbose output'
-        )
-
-        parser.add_argument(
-            '--version',
-            action='version',
-            version=f'%(prog)s {__version__}'
-        )
-
-        parser.add_argument(
-            '--init-config',
-            action='store_true',
-            help='Generate a sample configuration file'
+            "--init-config", action="store_true", help="Generate a sample configuration file"
         )
 
         return parser
@@ -149,10 +131,12 @@ For more information, visit: https://github.com/yourusername/prettipy
     def _print_header(self):
         """Print application header."""
         if RICH_AVAILABLE and self.console:
-            self.console.print(Panel.fit(
-                "[bold cyan]Prettipy[/bold cyan] - Python Code to PDF Converter",
-                subtitle=f"v{__version__}"
-            ))
+            self.console.print(
+                Panel.fit(
+                    "[bold cyan]Prettipy[/bold cyan] - Python Code to PDF Converter",
+                    subtitle=f"v{__version__}",
+                )
+            )
         else:
             print(f"\n{'='*60}")
             print(f"Prettipy v{__version__} - Python Code to PDF Converter")
@@ -179,7 +163,7 @@ For more information, visit: https://github.com/yourusername/prettipy
         else:
             print(f"ℹ {message}")
 
-    def _init_config(self, output_path: str = 'prettipy-config.json'):
+    def _init_config(self, output_path: str = "prettipy-config.json"):
         """
         Generate a sample configuration file.
 
@@ -226,8 +210,10 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.page_size = args.page_size
             config.sort_method = args.sort
             # Preserve reverse_deps for compatibility; dependency-rev implies reverse
-            config.reverse_deps = getattr(args, 'reverse_deps', False) or args.sort == 'dependency-rev'
-            
+            config.reverse_deps = (
+                getattr(args, "reverse_deps", False) or args.sort == "dependency-rev"
+            )
+
             if args.no_linking:
                 config.enable_linking = False
 
@@ -247,7 +233,7 @@ For more information, visit: https://github.com/yourusername/prettipy
                 with Progress(
                     SpinnerColumn(),
                     TextColumn("[progress.description]{task.description}"),
-                    console=self.console
+                    console=self.console,
                 ) as progress:
                     task = progress.add_task("Converting Python files...", total=None)
 
@@ -276,6 +262,7 @@ For more information, visit: https://github.com/yourusername/prettipy
             self._print_error(f"An error occurred: {e}")
             if config.verbose:
                 import traceback
+
                 traceback.print_exc()
             return 1
 
@@ -286,5 +273,5 @@ def main():
     sys.exit(cli.run())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
