@@ -42,6 +42,9 @@ class PrettipyConfig:
     # Linking
     enable_linking: bool = True
 
+    sort_method: str = 'dependency'  # 'dependency', 'dependency-rev', 'lexicographic', or 'none'
+    reverse_deps: bool = False  # For dependency sorting, reverse the order
+
     # Output
     output_file: str = 'output.pdf'
     verbose: bool = False
@@ -89,6 +92,8 @@ class PrettipyConfig:
             'show_line_numbers': self.show_line_numbers,
             'theme': self.theme,
             'enable_linking': self.enable_linking,
+            'sort_method': self.sort_method,
+            'reverse_deps': self.reverse_deps,
             'output_file': self.output_file,
             'verbose': self.verbose
         }
