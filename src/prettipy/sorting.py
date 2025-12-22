@@ -31,7 +31,7 @@ class FileSorter:
         """
         return sorted(files, key=lambda p: str(p))
 
-    def sort_by_dependency(self, files: List[Path]) -> List[Path]:
+    def sort_by_dependency(self, files: List[Path], reverse: bool = False) -> List[Path]:
         """
         Sort files by dependency order using topological sort.
         
@@ -42,6 +42,8 @@ class FileSorter:
 
         Args:
             files: List of file paths to sort
+            reverse: If True, files that use functions come first (dependents first).
+                    If False, files that define functions come first (dependencies first).
 
         Returns:
             Sorted list of file paths in dependency order
@@ -50,7 +52,7 @@ class FileSorter:
             ValueError: If circular dependencies are detected
         """
         # Build the dependency graph
-        self._build_dependency_graph(files)
+        self._build_dependency_graph(files, reverse=reverse)
         
         # Check for cycles
         if not nx.is_directed_acyclic_graph(self.dependency_graph):
@@ -73,7 +75,7 @@ class FileSorter:
             # Sort nodes at the same level alphabetically
             return sorted(sorted_files, key=lambda p: str(p))
 
-    def _build_dependency_graph(self, files: List[Path]) -> None:
+    def _build_dependency_graph(self, files: List[Path], reverse: bool = False) -> None:
         """
         Build a directed graph representing file dependencies.
 
@@ -81,6 +83,7 @@ class FileSorter:
 
         Args:
             files: List of file paths to analyze
+            reverse: If True, reverse the edge direction (dependents come first)
         """
         self.dependency_graph.clear()
         
@@ -99,8 +102,12 @@ class FileSorter:
                 for other_file, other_funcs in file_functions.items():
                     if other_file != file_path and called_func in other_funcs:
                         # file_path depends on other_file
-                        # Add edge from other_file to file_path (dependency direction)
-                        self.dependency_graph.add_edge(other_file, file_path)
+                        if reverse:
+                            # Add edge from file_path to other_file (dependents come first)
+                            self.dependency_graph.add_edge(file_path, other_file)
+                        else:
+                            # Add edge from other_file to file_path (dependencies come first)
+                            self.dependency_graph.add_edge(other_file, file_path)
 
     def _extract_function_definitions(self, file_path: Path) -> Set[str]:
         """
@@ -169,13 +176,15 @@ class FileSorter:
         return calls
 
 
-def sort_files(files: List[Path], method: str = 'lexicographic') -> List[Path]:
+def sort_files(files: List[Path], method: str = 'lexicographic', reverse_deps: bool = False) -> List[Path]:
     """
     Sort files using the specified method.
 
     Args:
         files: List of file paths to sort
-        method: Sorting method - 'dependency', 'lexicographic', or 'none'
+        method: Sorting method - 'dependency', 'dependency-rev', 'lexicographic', or 'none'
+        reverse_deps: For dependency sorting, if True, files that use functions
+                 come first (dependents first). Ignored for non-dependency methods.
 
     Returns:
         Sorted list of file paths
@@ -192,9 +201,11 @@ def sort_files(files: List[Path], method: str = 'lexicographic') -> List[Path]:
     if method == 'lexicographic':
         return sorter.sort_by_lexicographic(files)
     elif method == 'dependency':
-        return sorter.sort_by_dependency(files)
+        return sorter.sort_by_dependency(files, reverse=reverse_deps)
+    elif method == 'dependency-rev':
+        return sorter.sort_by_dependency(files, reverse=True)
     else:
         raise ValueError(
             f"Invalid sorting method: {method}. "
-            "Must be 'dependency', 'lexicographic', or 'none'."
+            "Must be 'dependency', 'dependency-rev', 'lexicographic', or 'none'."
         )

@@ -53,7 +53,8 @@ class PrettipyConverter:
 
         # Apply sorting based on configuration
         try:
-            sorted_files = sort_files(py_files, method=self.config.sort_method)
+            sorted_files = sort_files(py_files, method=self.config.sort_method, 
+                                     reverse_deps=self.config.reverse_deps)
             return sorted_files
         except ValueError as e:
             # If dependency sorting fails (e.g., circular dependencies),

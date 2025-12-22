@@ -119,10 +119,11 @@ For more information, visit: https://github.com/yourusername/prettipy
 
         parser.add_argument(
             '--sort',
-            choices=['dependency', 'lexicographic', 'none'],
-            default='lexicographic',
-            help='File sorting method: dependency (by function calls), '
-                 'lexicographic (alphabetical), or none (default: lexicographic)'
+            choices=['dependency', 'dependency-rev', 'lexicographic', 'none'],
+            default='dependency',
+            help='File sorting method: dependency (providers first), dependency-rev '
+                 '(dependents first), lexicographic (alphabetical), or none '
+                 '(default: dependency)'
         )
 
         parser.add_argument(
@@ -224,6 +225,8 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.theme = args.theme
             config.page_size = args.page_size
             config.sort_method = args.sort
+            # Preserve reverse_deps for compatibility; dependency-rev implies reverse
+            config.reverse_deps = getattr(args, 'reverse_deps', False) or args.sort == 'dependency-rev'
             
             if args.no_linking:
                 config.enable_linking = False
