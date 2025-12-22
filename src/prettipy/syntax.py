@@ -169,13 +169,10 @@ class SyntaxHighlighter:
                 # Skip whitespace
                 if token_type in Token.Text:
                     continue
-                # Check for def or class (but not constants like True/False/None)
-                if token_type in Token.Keyword and token_type not in Token.Keyword.Constant:
-                    if token_value in ('def', 'class'):
-                        return True
-                    # If we hit another keyword, it's not a definition
-                    return False
-                # If we hit something else, stop looking
+                # Check specifically for def or class
+                if token_type in Token.Keyword and token_value in ('def', 'class'):
+                    return True
+                # If we hit a non-whitespace token that's not def/class, stop looking
                 break
         
         # Look forward for '=' (assignment)
