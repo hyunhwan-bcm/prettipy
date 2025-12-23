@@ -175,6 +175,8 @@ class PrettipyConverter:
 
         # Create anchor mapping for directory tree links
         file_to_anchor = {}
+        tree_anchor_name = "directory_tree"
+        tree_anchor_exists = False
         
         # Add directory tree if enabled
         if self.config.show_directory_tree:
@@ -190,10 +192,11 @@ class PrettipyConverter:
                 
                 # Add tree heading
                 story.append(Paragraph(
-                    "<b>📂 Directory Structure</b>",
+                    f'<a name="{tree_anchor_name}"/><b>📂 Directory Structure</b>',
                     self.styles['info']
                 ))
                 story.append(Spacer(1, 0.1 * 72))
+                tree_anchor_exists = True
                 
                 # Add the tree
                 story.append(Paragraph(tree_html, self.styles['tree']))
@@ -222,12 +225,21 @@ class PrettipyConverter:
             # Get anchor for this file if directory tree is enabled
             anchor_name = file_to_anchor.get(str(rel_path), '') if self.config.show_directory_tree else ''
 
-            # File header with emoji and anchor
+            back_link_html = ''
+            if tree_anchor_exists:
+                back_link_html = (
+                    f' <font size="9"><a href="#{tree_anchor_name}" color="blue"><u>← Back</u></a></font>'
+                )
+
+            # File header with emoji, anchor, and back link
             if anchor_name:
                 # Add anchor to the file header so links from tree work
                 file_header_html = f'<a name="{anchor_name}"/>📄 {html.escape(str(rel_path))}'
             else:
                 file_header_html = f"📄 {html.escape(str(rel_path))}"
+
+            if back_link_html:
+                file_header_html = f"{file_header_html}{back_link_html}"
             
             story.append(Paragraph(
                 file_header_html,

@@ -43,7 +43,7 @@ class PrettipyConfig:
     enable_linking: bool = True
     
     # Directory tree
-    show_directory_tree: bool = False
+    show_directory_tree: bool = True
     directory_tree_max_depth: int = 5
 
     sort_method: str = 'dependency'  # 'dependency', 'dependency-rev', 'lexicographic', or 'none'
