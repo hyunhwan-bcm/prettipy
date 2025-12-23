@@ -12,7 +12,7 @@ Be respectful, inclusive, and professional in all interactions. We're all here t
 
 If you find a bug:
 
-1. Check if it's already reported in [Issues](https://github.com/yourusername/prettipy/issues)
+1. Check if it's already reported in [Issues](https://github.com/hyunhwan-bcm/prettipy/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Steps to reproduce

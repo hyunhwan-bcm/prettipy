@@ -55,7 +55,7 @@ prettipy -w 100
 prettipy --no-linking
 
 # Clone and convert a GitHub repository
-prettipy --gh https://github.com/user/repo
+prettipy --github https://github.com/user/repo
 
 # Clone a specific branch
 prettipy --github https://github.com/user/repo --branch develop
@@ -72,13 +72,13 @@ Prettipy can clone GitHub repositories and convert them to PDF with a single com
 
 ```bash
 # Clone and convert from default branch
-prettipy --gh https://github.com/user/repo
+prettipy --github https://github.com/user/repo
 
 # Clone from specific branch
-prettipy --gh https://github.com/user/repo --branch develop
+prettipy --github https://github.com/user/repo --branch develop
 
 # Combine with other options
-prettipy --gh https://github.com/user/repo -o project.pdf --sort dependency
+prettipy --github https://github.com/user/repo -o project.pdf --sort dependency
 ```
 
 ### Features
@@ -92,13 +92,13 @@ prettipy --gh https://github.com/user/repo -o project.pdf --sort dependency
 
 ```bash
 # Convert the popular requests library
-prettipy --gh https://github.com/psf/requests -o requests_source.pdf
+prettipy --github https://github.com/psf/requests -o requests_source.pdf
 
 # Convert a specific branch of Django
 prettipy --github https://github.com/django/django -b stable/4.2.x -o django_4.2.pdf
 
 # Convert with custom settings
-prettipy --gh https://github.com/user/repo \
+prettipy --github https://github.com/user/repo \
   --branch main \
   -o output.pdf \
   --page-size a4 \
@@ -218,7 +218,7 @@ optional arguments:
   --no-linking          Disable auto-linking to function/variable definitions
   --sort {dependency,lexicographic,none}
                         File sorting method (default: lexicographic)
-  --github, --gh URL    Clone and convert a GitHub repository
+  --github URL          Clone and convert a GitHub repository
   --branch, -b BRANCH   Branch to checkout when cloning (default: repo's default branch)
   -v, --verbose         Enable verbose output
   --version             Show program's version number and exit
@@ -239,10 +239,10 @@ This will create `output.pdf` with all Python files from the current directory.
 
 ```bash
 # Clone and convert from default branch
-prettipy --gh https://github.com/psf/requests
+prettipy --github https://github.com/psf/requests
 
 # Clone from specific branch
-prettipy --gh https://github.com/user/repo --branch develop -o output.pdf
+prettipy --github https://github.com/user/repo --branch develop -o output.pdf
 ```
 
 #### Convert With Custom Settings
@@ -385,7 +385,7 @@ More themes coming soon!
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/prettipy.git
+git clone https://github.com/hyunhwan-bcm/prettipy.git
 cd prettipy
 
 # Create virtual environment

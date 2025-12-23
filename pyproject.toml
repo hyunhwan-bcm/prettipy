@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prettipy"
-version = "0.1.4"
+version = "0.1.5"
 description = "Convert Python code to beautifully formatted, syntax-highlighted PDFs"
 readme = "README.md"
 authors = [
@@ -49,10 +49,10 @@ rich = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/prettipy"
-Documentation = "https://github.com/yourusername/prettipy#readme"
-Repository = "https://github.com/yourusername/prettipy.git"
-"Bug Tracker" = "https://github.com/yourusername/prettipy/issues"
+Homepage = "https://github.com/hyunhwan-bcm/prettipy"
+Documentation = "https://github.com/hyunhwan-bcm/prettipy#readme"
+Repository = "https://github.com/hyunhwan-bcm/prettipy.git"
+"Bug Tracker" = "https://github.com/hyunhwan-bcm/prettipy/issues"
 
 [project.scripts]
 prettipy = "prettipy.cli:main"
