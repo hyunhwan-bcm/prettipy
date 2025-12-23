@@ -76,7 +76,8 @@ class TestNotebookSupport:
         assert temp_py_file is not None
         assert temp_py_file.exists()
         assert temp_py_file.suffix == ".py"
-        assert temp_py_file.stem == "test_notebook"
+        # Filename includes hash for uniqueness
+        assert temp_py_file.stem.startswith("test_notebook")
 
         # Check content
         content = temp_py_file.read_text()

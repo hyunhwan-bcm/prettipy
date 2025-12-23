@@ -86,14 +86,17 @@ class NotebookConverter:
         if python_code is None:
             return None
 
-        # Create a temporary file with the same base name but .py extension
-        # We use a temp directory to avoid cluttering the source directory
+        # Create a temporary file with a unique name to avoid conflicts
+        # Include a hash of the absolute path to ensure uniqueness
+        import hashlib
+
+        path_hash = hashlib.md5(str(notebook_path.absolute()).encode()).hexdigest()[:8]
         temp_dir = Path(tempfile.gettempdir()) / "prettipy_notebooks"
         temp_dir.mkdir(exist_ok=True)
 
-        # Use the same base name as the notebook
+        # Use base name with path hash to ensure uniqueness
         base_name = notebook_path.stem
-        temp_py_file = temp_dir / f"{base_name}.py"
+        temp_py_file = temp_dir / f"{base_name}_{path_hash}.py"
 
         # Write the Python code
         temp_py_file.write_text(python_code, encoding="utf-8")
