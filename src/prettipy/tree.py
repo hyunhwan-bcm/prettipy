@@ -27,10 +27,7 @@ class DirectoryTreeGenerator:
         self.file_to_anchor: Dict[str, str] = {}
 
     def generate_tree_text(
-        self,
-        root_path: Path,
-        files: List[Path],
-        exclude_dirs: set = None
+        self, root_path: Path, files: List[Path], exclude_dirs: set = None
     ) -> str:
         """
         Generate the directory tree text representation.
@@ -56,10 +53,7 @@ class DirectoryTreeGenerator:
         try:
             # Generate the tree
             DisplayTree(
-                str(root_path),
-                maxDepth=self.max_depth,
-                showHidden=False,
-                ignoreList=ignore_list
+                str(root_path), maxDepth=self.max_depth, showHidden=False, ignoreList=ignore_list
             )
 
             # Get the output
@@ -97,10 +91,7 @@ class DirectoryTreeGenerator:
         return file_to_anchor
 
     def generate_linked_tree_html(
-        self,
-        root_path: Path,
-        files: List[Path],
-        exclude_dirs: set = None
+        self, root_path: Path, files: List[Path], exclude_dirs: set = None
     ) -> Tuple[str, Dict[str, str]]:
         """
         Generate HTML representation of the tree with clickable links.
@@ -121,9 +112,9 @@ class DirectoryTreeGenerator:
 
         # Convert tree text to HTML with links
         html_lines = []
-        for line in tree_text.split('\n'):
+        for line in tree_text.split("\n"):
             if not line.strip():
-                html_lines.append('')
+                html_lines.append("")
                 continue
 
             # Check if this line contains a file that's in our PDF
@@ -134,7 +125,7 @@ class DirectoryTreeGenerator:
                     filename = rel_path.name
 
                     # If the filename appears in this line
-                    if filename in line and not line.strip().endswith('/'):
+                    if filename in line and not line.strip().endswith("/"):
                         # Get the anchor for this file
                         anchor = file_to_anchor.get(str(rel_path))
                         if anchor:
@@ -144,7 +135,7 @@ class DirectoryTreeGenerator:
                             escaped_filename = html.escape(filename)
                             linked_line = escaped_line.replace(
                                 escaped_filename,
-                                f'<a href="#{anchor}" color="blue"><u>{escaped_filename}</u></a>'
+                                f'<a href="#{anchor}" color="blue"><u>{escaped_filename}</u></a>',
                             )
                             html_lines.append(linked_line)
                             linked = True
@@ -156,4 +147,4 @@ class DirectoryTreeGenerator:
                 # No link needed, just escape and add
                 html_lines.append(html.escape(line))
 
-        return '<br/>'.join(html_lines), file_to_anchor
+        return "<br/>".join(html_lines), file_to_anchor

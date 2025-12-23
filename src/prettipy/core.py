@@ -174,31 +174,31 @@ class PrettipyConverter:
         file_to_anchor = {}
         tree_anchor_name = "directory_tree"
         tree_anchor_exists = False
-        
+
         # Add directory tree if enabled
         if self.config.show_directory_tree:
-            tree_generator = DirectoryTreeGenerator(
-                max_depth=self.config.directory_tree_max_depth
-            )
-            
+            tree_generator = DirectoryTreeGenerator(max_depth=self.config.directory_tree_max_depth)
+
             try:
                 # Generate tree with links to file pages
                 tree_html, file_to_anchor = tree_generator.generate_linked_tree_html(
                     root, files, self.config.exclude_dirs
                 )
-                
+
                 # Add tree heading
-                story.append(Paragraph(
-                    f'<a name="{tree_anchor_name}"/><b>📂 Directory Structure</b>',
-                    self.styles['info']
-                ))
+                story.append(
+                    Paragraph(
+                        f'<a name="{tree_anchor_name}"/><b>📂 Directory Structure</b>',
+                        self.styles["info"],
+                    )
+                )
                 story.append(Spacer(1, 0.1 * 72))
                 tree_anchor_exists = True
-                
+
                 # Add the tree
-                story.append(Paragraph(tree_html, self.styles['tree']))
+                story.append(Paragraph(tree_html, self.styles["tree"]))
                 story.append(Spacer(1, 0.2 * 72))
-                
+
             except Exception as e:
                 if self.config.verbose:
                     print(f"Warning: Failed to generate directory tree: {e}")
@@ -220,13 +220,13 @@ class PrettipyConverter:
                 rel_path = file_path
 
             # Get anchor for this file if directory tree is enabled
-            anchor_name = file_to_anchor.get(str(rel_path), '') if self.config.show_directory_tree else ''
+            anchor_name = (
+                file_to_anchor.get(str(rel_path), "") if self.config.show_directory_tree else ""
+            )
 
-            back_link_html = ''
+            back_link_html = ""
             if tree_anchor_exists:
-                back_link_html = (
-                    f' <font size="9"><a href="#{tree_anchor_name}" color="blue"><u>← Back</u></a></font>'
-                )
+                back_link_html = f' <font size="9"><a href="#{tree_anchor_name}" color="blue"><u>← Back</u></a></font>'
 
             # File header with emoji, anchor, and back link
             if anchor_name:
@@ -237,11 +237,8 @@ class PrettipyConverter:
 
             if back_link_html:
                 file_header_html = f"{file_header_html}{back_link_html}"
-            
-            story.append(Paragraph(
-                file_header_html,
-                self.styles['file_header']
-            ))
+
+            story.append(Paragraph(file_header_html, self.styles["file_header"]))
 
             # Process file content
             try:
