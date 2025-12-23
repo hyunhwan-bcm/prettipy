@@ -4,10 +4,11 @@ Jupyter Notebook to Python converter.
 This module handles conversion of .ipynb files to .py files using nbconvert.
 """
 
+import hashlib
+import json
 import tempfile
 from pathlib import Path
 from typing import Optional
-import json
 
 
 class NotebookConverter:
@@ -88,8 +89,6 @@ class NotebookConverter:
 
         # Create a temporary file with a unique name to avoid conflicts
         # Include a hash of the absolute path to ensure uniqueness
-        import hashlib
-
         path_hash = hashlib.md5(str(notebook_path.absolute()).encode()).hexdigest()[:8]
         temp_dir = Path(tempfile.gettempdir()) / "prettipy_notebooks"
         temp_dir.mkdir(exist_ok=True)

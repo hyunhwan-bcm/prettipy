@@ -61,9 +61,9 @@ class TestNotebookSupport:
         assert python_code is not None
         assert "print('Hello from notebook')" in python_code
         assert "def add(a, b):" in python_code
-        # Markdown cells are included as comments by nbconvert's PythonExporter
+        # nbconvert's PythonExporter includes markdown cells as commented lines
         # This is expected behavior - we only exclude outputs, not markdown
-        assert "# This is a markdown cell" in python_code or "This is a markdown cell" in python_code
+        assert "# This is a markdown cell" in python_code
 
     def test_notebook_converter_temp_file(self, tmp_path):
         """Test creating temporary Python file from notebook."""
