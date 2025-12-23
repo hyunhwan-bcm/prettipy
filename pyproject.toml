@@ -32,6 +32,7 @@ dependencies = [
     "pygments>=2.15.0",
     "networkx>=3.0",
     "directory-tree>=1.0.0",
+    "gitpython>=3.1.0",
 ]
 
 [project.optional-dependencies]
