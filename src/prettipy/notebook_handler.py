@@ -6,8 +6,6 @@ This module handles the conversion of .ipynb files to .py files using nbconvert.
 
 from pathlib import Path
 from typing import Optional
-import tempfile
-import shutil
 
 
 def convert_notebook_to_python(notebook_path: Path, verbose: bool = False) -> Optional[Path]:
