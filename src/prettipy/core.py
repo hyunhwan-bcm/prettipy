@@ -9,7 +9,8 @@ import html
 from pathlib import Path
 from typing import List, Optional, Dict
 from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle
+from reportlab.lib import colors
 
 from .config import PrettipyConfig
 from .formatter import CodeFormatter
@@ -170,9 +171,6 @@ class PrettipyConverter:
         Returns:
             List of flowable elements to add to the story
         """
-        from reportlab.platypus import Table, TableStyle
-        from reportlab.lib import colors
-        
         # Create a table with one column to simulate a bordered code block
         # Each row contains one line of code
         table_data = []
