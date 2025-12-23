@@ -155,3 +155,32 @@ class TestNotebookSupport:
         # Should handle the error gracefully and not include the bad notebook
         # (no temp file created for invalid notebook)
         assert len(files) == 0
+
+    def test_notebook_with_directory_tree(self, tmp_path):
+        """Test that notebooks appear in directory tree with proper links."""
+        # Create a notebook in a subdirectory
+        subdir = tmp_path / "notebooks"
+        subdir.mkdir()
+        notebook_path = subdir / "analysis.ipynb"
+        self.create_sample_notebook(notebook_path)
+
+        # Create a regular Python file
+        py_path = tmp_path / "script.py"
+        py_path.write_text("print('regular python')")
+
+        output_pdf = tmp_path / "with_tree.pdf"
+
+        config = PrettipyConfig(
+            include_ipynb=True, 
+            show_directory_tree=True, 
+            verbose=True
+        )
+        converter = PrettipyConverter(config)
+        converter.convert_directory(str(tmp_path), str(output_pdf))
+
+        # Check that PDF was created
+        assert output_pdf.exists()
+        assert output_pdf.stat().st_size > 0
+
+        # Verify that the ipynb_to_py_map was populated
+        assert len(converter.ipynb_to_py_map) == 1
