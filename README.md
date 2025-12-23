@@ -19,6 +19,7 @@ Transform your Python source code into professionally formatted, syntax-highligh
 - 📋 **Rich Output**: Beautiful progress bars and formatted output (when `rich` is installed)
 - 🔍 **Smart Filtering**: Automatically excludes common directories like `venv`, `__pycache__`, etc.
 - 📄 **Professional Layout**: Clean, readable formatting with proper spacing and margins
+- 🐙 **GitHub Integration**: Clone and convert GitHub repositories directly (NEW!)
 
 ## 🚀 Quick Start
 
@@ -52,6 +53,57 @@ prettipy -w 100
 
 # Disable auto-linking
 prettipy --no-linking
+
+# Clone and convert a GitHub repository
+prettipy --gh https://github.com/user/repo
+
+# Clone a specific branch
+prettipy --github https://github.com/user/repo --branch develop
+```
+
+## 🐙 GitHub Repository Integration
+
+Prettipy can clone GitHub repositories and convert them to PDF with a single command. This is perfect for:
+- Creating offline documentation of open-source projects
+- Archiving project code for review or reference
+- Sharing code with people who prefer PDF format
+
+### Usage
+
+```bash
+# Clone and convert from default branch
+prettipy --gh https://github.com/user/repo
+
+# Clone from specific branch
+prettipy --gh https://github.com/user/repo --branch develop
+
+# Combine with other options
+prettipy --gh https://github.com/user/repo -o project.pdf --sort dependency
+```
+
+### Features
+
+- **Automatic Cloning**: Repository is cloned to a temporary directory
+- **Branch Support**: Specify any branch with `--branch` or `-b` flag (defaults to repository's default branch)
+- **Automatic Cleanup**: Temporary files are automatically removed after conversion
+- **Error Handling**: Clear error messages for invalid URLs, missing repos, or network issues
+
+### Examples
+
+```bash
+# Convert the popular requests library
+prettipy --gh https://github.com/psf/requests -o requests_source.pdf
+
+# Convert a specific branch of Django
+prettipy --github https://github.com/django/django -b stable/4.2.x -o django_4.2.pdf
+
+# Convert with custom settings
+prettipy --gh https://github.com/user/repo \
+  --branch main \
+  -o output.pdf \
+  --page-size a4 \
+  --sort lexicographic \
+  -v
 ```
 
 ## 🔗 Auto-linking Feature
@@ -166,6 +218,8 @@ optional arguments:
   --no-linking          Disable auto-linking to function/variable definitions
   --sort {dependency,lexicographic,none}
                         File sorting method (default: lexicographic)
+  --github, --gh URL    Clone and convert a GitHub repository
+  --branch, -b BRANCH   Branch to checkout when cloning (default: repo's default branch)
   -v, --verbose         Enable verbose output
   --version             Show program's version number and exit
   --init-config         Generate a sample configuration file
@@ -180,6 +234,16 @@ prettipy
 ```
 
 This will create `output.pdf` with all Python files from the current directory.
+
+#### Convert GitHub Repository
+
+```bash
+# Clone and convert from default branch
+prettipy --gh https://github.com/psf/requests
+
+# Clone from specific branch
+prettipy --gh https://github.com/user/repo --branch develop -o output.pdf
+```
 
 #### Convert With Custom Settings
 

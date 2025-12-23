@@ -24,6 +24,7 @@ except ImportError:
 from . import __version__
 from .config import PrettipyConfig
 from .core import PrettipyConverter
+from .github_handler import GitHubHandler, GitHubHandlerError
 
 
 class CLI:
@@ -56,6 +57,8 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
+  prettipy --gh https://github.com/user/repo  # Clone and convert GitHub repo
+  prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
 For more information, visit: https://github.com/yourusername/prettipy
             """,
@@ -143,6 +146,20 @@ For more information, visit: https://github.com/yourusername/prettipy
             "--init-config", action="store_true", help="Generate a sample configuration file"
         )
 
+        parser.add_argument(
+            "--github",
+            "--gh",
+            dest="github_url",
+            help="Clone and convert a GitHub repository (e.g., https://github.com/user/repo)",
+        )
+
+        parser.add_argument(
+            "--branch",
+            "-b",
+            dest="github_branch",
+            help="Branch to checkout when cloning GitHub repository (default: repository's default branch)",
+        )
+
         return parser
 
     def _print_header(self):
@@ -209,6 +226,14 @@ For more information, visit: https://github.com/yourusername/prettipy
             self._init_config()
             return 0
 
+        # Validate conflicting arguments
+        if args.github_url and args.files:
+            self._print_error(
+                "Cannot use --github with --files. "
+                "GitHub mode converts the entire cloned repository."
+            )
+            return 1
+
         self._print_header()
 
         # Load configuration
@@ -253,6 +278,32 @@ For more information, visit: https://github.com/yourusername/prettipy
         # Create converter
         converter = PrettipyConverter(config)
 
+        # Handle GitHub repository cloning
+        github_handler = None
+        target_directory = args.directory
+
+        if args.github_url:
+            try:
+                github_handler = GitHubHandler(verbose=config.verbose)
+                self._print_info(f"Cloning GitHub repository: {args.github_url}")
+
+                if args.github_branch:
+                    self._print_info(f"Checking out branch: {args.github_branch}")
+
+                cloned_path, branch = github_handler.clone_repository(
+                    args.github_url, args.github_branch
+                )
+                target_directory = str(cloned_path)
+
+                self._print_success(f"Successfully cloned repository (branch: {branch})")
+
+            except GitHubHandlerError as e:
+                self._print_error(str(e))
+                return 1
+            except Exception as e:
+                self._print_error(f"Unexpected error while cloning repository: {e}")
+                return 1
+
         # Convert files
         try:
             if RICH_AVAILABLE and self.console:
@@ -266,7 +317,7 @@ For more information, visit: https://github.com/yourusername/prettipy
                     if args.files:
                         converter.convert_files(args.files, args.output)
                     else:
-                        converter.convert_directory(args.directory, args.output)
+                        converter.convert_directory(target_directory, args.output)
 
                     progress.update(task, completed=True)
             else:
@@ -274,7 +325,7 @@ For more information, visit: https://github.com/yourusername/prettipy
                 if args.files:
                     converter.convert_files(args.files, args.output)
                 else:
-                    converter.convert_directory(args.directory, args.output)
+                    converter.convert_directory(target_directory, args.output)
 
             return 0
 
@@ -291,6 +342,10 @@ For more information, visit: https://github.com/yourusername/prettipy
 
                 traceback.print_exc()
             return 1
+        finally:
+            # Always clean up GitHub temporary directory
+            if github_handler:
+                github_handler.cleanup()
 
 
 def main():
