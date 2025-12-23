@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 try:
     from git import Repo, GitCommandError, InvalidGitRepositoryError
+
     GIT_AVAILABLE = True
 except ImportError:
     GIT_AVAILABLE = False
@@ -22,6 +23,7 @@ except ImportError:
 
 class GitHubHandlerError(Exception):
     """Base exception for GitHub handler errors."""
+
     pass
 
 
@@ -58,19 +60,17 @@ class GitHubHandler:
         try:
             parsed = urlparse(url)
             # Check for github.com domain
-            if 'github.com' not in parsed.netloc:
+            if "github.com" not in parsed.netloc:
                 return False
             # Check for valid path structure
-            path_parts = [p for p in parsed.path.split('/') if p]
+            path_parts = [p for p in parsed.path.split("/") if p]
             if len(path_parts) < 2:
                 return False
             return True
         except Exception:
             return False
 
-    def clone_repository(
-        self, repo_url: str, branch: Optional[str] = None
-    ) -> Tuple[Path, str]:
+    def clone_repository(self, repo_url: str, branch: Optional[str] = None) -> Tuple[Path, str]:
         """
         Clone a GitHub repository to a temporary directory.
 
@@ -106,7 +106,7 @@ class GitHubHandler:
                 repo_url,
                 str(self.temp_dir),
                 branch=branch if branch else None,
-                depth=1  # Shallow clone for efficiency
+                depth=1,  # Shallow clone for efficiency
             )
 
             actual_branch = repo.active_branch.name if repo.active_branch else "main"

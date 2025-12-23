@@ -278,17 +278,17 @@ For more information, visit: https://github.com/yourusername/prettipy
             try:
                 github_handler = GitHubHandler(verbose=config.verbose)
                 self._print_info(f"Cloning GitHub repository: {args.github_url}")
-                
+
                 if args.github_branch:
                     self._print_info(f"Checking out branch: {args.github_branch}")
-                
+
                 cloned_path, branch = github_handler.clone_repository(
                     args.github_url, args.github_branch
                 )
                 target_directory = str(cloned_path)
-                
+
                 self._print_success(f"Successfully cloned repository (branch: {branch})")
-                
+
             except GitHubHandlerError as e:
                 self._print_error(str(e))
                 if github_handler:
