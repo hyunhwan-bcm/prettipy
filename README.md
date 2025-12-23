@@ -20,6 +20,7 @@ Transform your Python source code into professionally formatted, syntax-highligh
 - 🔍 **Smart Filtering**: Automatically excludes common directories like `venv`, `__pycache__`, etc.
 - 📄 **Professional Layout**: Clean, readable formatting with proper spacing and margins
 - 🐙 **GitHub Integration**: Clone and convert GitHub repositories directly (NEW!)
+- 📓 **Jupyter Notebook Support**: Include .ipynb files by converting them to Python using nbconvert (NEW!)
 
 ## 🚀 Quick Start
 
@@ -53,6 +54,9 @@ prettipy -w 100
 
 # Disable auto-linking
 prettipy --no-linking
+
+# Include Jupyter notebooks (.ipynb files)
+prettipy --include-ipynb
 
 # Clone and convert a GitHub repository
 prettipy --github https://github.com/user/repo
@@ -144,6 +148,65 @@ prettipy --no-linking
 config = PrettipyConfig(enable_linking=False)
 ```
 
+## 📓 Jupyter Notebook Support
+
+Prettipy can include Jupyter Notebook (`.ipynb`) files in your PDF documents by converting them to Python code using nbconvert. This feature is perfect for data science and research projects that mix notebooks with regular Python scripts.
+
+### Enabling Notebook Support
+
+By default, `.ipynb` files are excluded. To include them, use the `--include-ipynb` flag:
+
+```bash
+# Include notebooks in the conversion
+prettipy --include-ipynb
+
+# Combine with other options
+prettipy --include-ipynb -o analysis.pdf --sort dependency
+```
+
+### How It Works
+
+1. When `--include-ipynb` is enabled, prettipy scans for `.ipynb` files in addition to `.py` files
+2. Each notebook is converted to Python code using nbconvert's `PythonExporter`
+3. The converted code includes:
+   - All code cells from the notebook
+   - Markdown cells as comments (for context)
+   - No outputs or execution results
+4. In the PDF, notebooks are displayed with their original `.ipynb` filename and a 📓 emoji
+5. Auto-linking and other features work seamlessly with converted notebooks
+
+### Example
+
+```bash
+# Convert a project with both .py and .ipynb files
+prettipy /path/to/data-science-project --include-ipynb -o project.pdf
+
+# Use with GitHub integration
+prettipy --github https://github.com/user/ml-project --include-ipynb
+```
+
+### Configuration File
+
+You can also enable notebook support in your configuration file:
+
+```json
+{
+  "include_ipynb": true,
+  "sort_method": "dependency",
+  "page_size": "a4"
+}
+```
+
+### Python API
+
+```python
+from prettipy import PrettipyConverter, PrettipyConfig
+
+config = PrettipyConfig(include_ipynb=True)
+converter = PrettipyConverter(config)
+converter.convert_directory("./notebooks", "notebooks.pdf")
+```
+
 ## 📂 File Sorting
 
 Prettipy provides flexible options for sorting files in the generated PDF:
@@ -201,7 +264,7 @@ You can also set the sorting method in your configuration file:
 usage: prettipy [-h] [-o OUTPUT] [-f FILES [FILES ...]] [-w WIDTH] [--config CONFIG] [-t TITLE] [--theme {default}]
                 [--page-size {letter,a4}] [--no-linking] [--show-tree] [--no-tree] [--tree-depth TREE_DEPTH]
                 [--sort {dependency,dependency-rev,lexicographic,none}] [-v] [--version] [--init-config]
-                [--github GITHUB_URL] [--branch GITHUB_BRANCH]
+                [--include-ipynb] [--github GITHUB_URL] [--branch GITHUB_BRANCH]
                 [directory]
 
 Convert Python code to beautifully formatted PDFs
@@ -234,6 +297,7 @@ options:
   -v, --verbose         Enable verbose output
   --version             show program's version number and exit
   --init-config         Generate a sample configuration file
+  --include-ipynb       Include Jupyter notebook (.ipynb) files, converting them to Python using nbconvert
   --github GITHUB_URL   Clone and convert a GitHub repository (e.g., https://github.com/user/repo)
   --branch GITHUB_BRANCH, -b GITHUB_BRANCH
                         Branch to checkout when cloning GitHub repository (default: repository's default branch)
@@ -248,6 +312,7 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
+  prettipy --include-ipynb             # Include Jupyter notebooks
   prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
   prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
@@ -371,6 +436,7 @@ This creates `prettipy-config.json`:
   "theme": "default",
   "enable_linking": true,
   "sort_method": "lexicographic",
+  "include_ipynb": false,
   "output_file": "output.pdf",
   "verbose": false
 }
@@ -392,6 +458,7 @@ This creates `prettipy-config.json`:
 | `theme` | string | `"default"` | Color theme |
 | `enable_linking` | bool | `true` | Enable auto-linking to definitions |
 | `sort_method` | string | `"lexicographic"` | File sorting method (dependency/lexicographic/none) |
+| `include_ipynb` | bool | `false` | Include Jupyter notebooks (.ipynb files) |
 | `output_file` | string | `"output.pdf"` | Default output path |
 | `verbose` | bool | `false` | Verbose output |
 

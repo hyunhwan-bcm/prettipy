@@ -63,6 +63,9 @@ class PrettipyConfig:
     sort_method: str = "dependency"  # 'dependency', 'dependency-rev', 'lexicographic', or 'none'
     reverse_deps: bool = False  # For dependency sorting, reverse the order
 
+    # Jupyter notebook support
+    include_ipynb: bool = False  # Include .ipynb files (converted to .py using nbconvert)
+
     # Output
     output_file: str = "output.pdf"
     verbose: bool = False
@@ -114,6 +117,7 @@ class PrettipyConfig:
             "directory_tree_max_depth": self.directory_tree_max_depth,
             "sort_method": self.sort_method,
             "reverse_deps": self.reverse_deps,
+            "include_ipynb": self.include_ipynb,
             "output_file": self.output_file,
             "verbose": self.verbose,
         }
