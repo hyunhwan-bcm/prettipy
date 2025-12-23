@@ -57,7 +57,6 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
-  prettipy --include-ipynb             # Include Jupyter notebooks (.ipynb files)
   prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
   prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
@@ -137,12 +136,6 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
             help="File sorting method: dependency (providers first), dependency-rev "
             "(dependents first), lexicographic (alphabetical), or none "
             "(default: dependency)",
-        )
-
-        parser.add_argument(
-            "--include-ipynb",
-            action="store_true",
-            help="Include Jupyter notebook (.ipynb) files by converting them to Python scripts",
         )
 
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
@@ -273,9 +266,6 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
             if hasattr(args, "tree_depth"):
                 config.directory_tree_max_depth = args.tree_depth
-
-            if getattr(args, "include_ipynb", False):
-                config.include_ipynb = True
 
             if args.title:
                 config.title = args.title

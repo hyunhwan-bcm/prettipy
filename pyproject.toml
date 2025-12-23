@@ -33,7 +33,6 @@ dependencies = [
     "networkx>=3.0",
     "directory-tree>=1.0.0",
     "gitpython>=3.1.0",
-    "nbconvert>=7.0.0",
 ]
 
 [project.optional-dependencies]
