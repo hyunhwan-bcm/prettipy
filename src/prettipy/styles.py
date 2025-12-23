@@ -128,6 +128,22 @@ class StyleManager:
             fontName="Helvetica-Oblique",
         )
 
+        self.tree_style = ParagraphStyle(
+            'TreeStyle',
+            fontName=self.font_name,
+            fontSize=9,
+            leading=14,
+            leftIndent=12,
+            rightIndent=0,
+            spaceBefore=12,
+            spaceAfter=12,
+            backColor=HexColor('#f8f8f8'),
+            borderColor=HexColor('#e0e0e0'),
+            borderWidth=1,
+            borderPadding=12,
+            alignment=TA_LEFT
+        )
+
     def get_page_margins(self) -> Tuple[float, float, float, float]:
         """
         Get page margins.
@@ -145,9 +161,10 @@ class StyleManager:
             Dictionary mapping style names to ParagraphStyle objects
         """
         return {
-            "title": self.title_style,
-            "file_header": self.file_header_style,
-            "code": self.code_container_style,
-            "info": self.info_style,
-            "error": self.error_style,
+            'title': self.title_style,
+            'file_header': self.file_header_style,
+            'code': self.code_container_style,
+            'info': self.info_style,
+            'error': self.error_style,
+            'tree': self.tree_style
         }

@@ -55,6 +55,10 @@ class PrettipyConfig:
 
     # Linking
     enable_linking: bool = True
+    
+    # Directory tree
+    show_directory_tree: bool = True
+    directory_tree_max_depth: int = 5
 
     sort_method: str = "dependency"  # 'dependency', 'dependency-rev', 'lexicographic', or 'none'
     reverse_deps: bool = False  # For dependency sorting, reverse the order
@@ -95,21 +99,23 @@ class PrettipyConfig:
             config_path: Path where to save the configuration
         """
         data = {
-            "exclude_dirs": list(self.exclude_dirs),
-            "exclude_patterns": self.exclude_patterns,
-            "include_patterns": self.include_patterns,
-            "max_line_width": self.max_line_width,
-            "font_size": self.font_size,
-            "line_spacing": self.line_spacing,
-            "page_size": self.page_size,
-            "title": self.title,
-            "show_line_numbers": self.show_line_numbers,
-            "theme": self.theme,
-            "enable_linking": self.enable_linking,
-            "sort_method": self.sort_method,
-            "reverse_deps": self.reverse_deps,
-            "output_file": self.output_file,
-            "verbose": self.verbose,
+            'exclude_dirs': list(self.exclude_dirs),
+            'exclude_patterns': self.exclude_patterns,
+            'include_patterns': self.include_patterns,
+            'max_line_width': self.max_line_width,
+            'font_size': self.font_size,
+            'line_spacing': self.line_spacing,
+            'page_size': self.page_size,
+            'title': self.title,
+            'show_line_numbers': self.show_line_numbers,
+            'theme': self.theme,
+            'enable_linking': self.enable_linking,
+            'show_directory_tree': self.show_directory_tree,
+            'directory_tree_max_depth': self.directory_tree_max_depth,
+            'sort_method': self.sort_method,
+            'reverse_deps': self.reverse_deps,
+            'output_file': self.output_file,
+            'verbose': self.verbose
         }
 
         with open(config_path, "w") as f:
