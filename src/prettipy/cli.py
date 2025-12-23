@@ -138,6 +138,12 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
             "(default: dependency)",
         )
 
+        parser.add_argument(
+            "--include-ipynb",
+            action="store_true",
+            help="Include Jupyter notebook (.ipynb) files by converting them to Python scripts",
+        )
+
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
         parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -266,6 +272,9 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
             if hasattr(args, "tree_depth"):
                 config.directory_tree_max_depth = args.tree_depth
+
+            if getattr(args, "include_ipynb", False):
+                config.include_ipynb = True
 
             if args.title:
                 config.title = args.title
