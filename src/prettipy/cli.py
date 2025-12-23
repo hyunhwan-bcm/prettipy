@@ -57,10 +57,10 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
-  prettipy --gh https://github.com/user/repo  # Clone and convert GitHub repo
+  prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
   prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
-For more information, visit: https://github.com/yourusername/prettipy
+For more information, visit: https://github.com/hyunhwan-bcm/prettipy
             """,
         )
 
@@ -148,7 +148,6 @@ For more information, visit: https://github.com/yourusername/prettipy
 
         parser.add_argument(
             "--github",
-            "--gh",
             dest="github_url",
             help="Clone and convert a GitHub repository (e.g., https://github.com/user/repo)",
         )

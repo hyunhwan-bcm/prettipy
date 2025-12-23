@@ -25,8 +25,8 @@ authors = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/prettipy"      # Change this
-Repository = "https://github.com/yourusername/prettipy.git" # Change this
+Homepage = "https://github.com/hyunhwan-bcm/prettipy"      # Change this
+Repository = "https://github.com/hyunhwan-bcm/prettipy.git" # Change this
 ```
 
 **`src/prettipy/__init__.py`**:
@@ -90,7 +90,7 @@ pytest --cov=prettipy
    git init
    git add .
    git commit -m "Initial commit"
-   git remote add origin https://github.com/yourusername/prettipy.git
+   git remote add origin https://github.com/hyunhwan-bcm/prettipy.git
    git push -u origin main
    ```
 

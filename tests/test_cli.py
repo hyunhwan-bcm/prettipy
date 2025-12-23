@@ -13,7 +13,7 @@ class TestCLIArgumentValidation:
 
         # Test that using both --github and --files returns error code
         result = cli.run(
-            ["--gh", "https://github.com/user/repo", "--files", "test.py", "-o", "test.pdf"]
+            ["--github", "https://github.com/user/repo", "--files", "test.py", "-o", "test.pdf"]
         )
 
         assert result == 1, "Should return error code when --github and --files are both used"
