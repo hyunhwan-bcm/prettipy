@@ -147,6 +147,12 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
         )
 
         parser.add_argument(
+            "--include-ipynb",
+            action="store_true",
+            help="Include Jupyter notebook (.ipynb) files, converting them to Python using nbconvert",
+        )
+
+        parser.add_argument(
             "--github",
             dest="github_url",
             help="Clone and convert a GitHub repository (e.g., https://github.com/user/repo)",
@@ -266,6 +272,9 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
             if hasattr(args, "tree_depth"):
                 config.directory_tree_max_depth = args.tree_depth
+
+            if hasattr(args, "include_ipynb") and args.include_ipynb:
+                config.include_ipynb = True
 
             if args.title:
                 config.title = args.title

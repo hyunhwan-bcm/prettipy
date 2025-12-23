@@ -7,7 +7,7 @@ the entire PDF generation process.
 
 import html
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 
@@ -17,6 +17,7 @@ from .syntax import SyntaxHighlighter
 from .styles import StyleManager
 from .sorting import sort_files
 from .tree import DirectoryTreeGenerator
+from .ipynb_converter import NotebookConverter
 
 
 class PrettipyConverter:
@@ -34,16 +35,20 @@ class PrettipyConverter:
         self.highlighter = SyntaxHighlighter(enable_linking=self.config.enable_linking)
         self.style_manager = StyleManager(theme=self.config.theme)
         self.styles = self.style_manager.get_styles()
+        self.notebook_converter = NotebookConverter(verbose=self.config.verbose)
+        # Maps converted .py file paths to original .ipynb file paths
+        self.ipynb_to_py_map: Dict[Path, Path] = {}
 
     def find_python_files(self, directory: Path) -> List[Path]:
         """
         Find all Python files in a directory, respecting exclusion rules.
+        If include_ipynb is enabled, also converts .ipynb files to temporary .py files.
 
         Args:
             directory: Root directory to search
 
         Returns:
-            List of Path objects for Python files, sorted according to config
+            List of Path objects for Python files (including converted notebooks), sorted according to config
         """
         py_files = []
 
@@ -51,6 +56,22 @@ class PrettipyConverter:
             for file_path in directory.rglob(pattern):
                 if not self.config.should_exclude_path(file_path):
                     py_files.append(file_path)
+
+        # If include_ipynb is enabled, also find and convert notebooks
+        if self.config.include_ipynb:
+            for ipynb_path in directory.rglob("*.ipynb"):
+                if not self.config.should_exclude_path(ipynb_path):
+                    # Convert notebook to temporary Python file
+                    temp_py_file = self.notebook_converter.create_temp_python_file(ipynb_path)
+                    if temp_py_file:
+                        # Store the mapping for later use in PDF generation
+                        self.ipynb_to_py_map[temp_py_file] = ipynb_path
+                        py_files.append(temp_py_file)
+                        if self.config.verbose:
+                            print(f"Converted {ipynb_path.name} to temporary Python file")
+                    else:
+                        if self.config.verbose:
+                            print(f"Warning: Failed to convert notebook {ipynb_path}")
 
         # Apply sorting based on configuration
         try:
@@ -96,7 +117,18 @@ class PrettipyConverter:
         if self.config.verbose:
             print(f"Found {len(py_files)} Python files")
             for f in py_files:
-                print(f"  - {f.relative_to(root)}")
+                # For converted notebooks, show the original path
+                if f in self.ipynb_to_py_map:
+                    display_f = self.ipynb_to_py_map[f]
+                    try:
+                        print(f"  - {display_f.relative_to(root)} (from .ipynb)")
+                    except ValueError:
+                        print(f"  - {display_f} (from .ipynb)")
+                else:
+                    try:
+                        print(f"  - {f.relative_to(root)}")
+                    except ValueError:
+                        print(f"  - {f}")
 
         self._generate_pdf(root, py_files, output_path)
 
@@ -180,9 +212,19 @@ class PrettipyConverter:
             tree_generator = DirectoryTreeGenerator(max_depth=self.config.directory_tree_max_depth)
 
             try:
+                # For the tree, we need to map display paths (original .ipynb) to their anchors
+                # Create a list of display files for the tree
+                display_files = []
+                for f in files:
+                    if f in self.ipynb_to_py_map:
+                        # Use the original .ipynb path for display
+                        display_files.append(self.ipynb_to_py_map[f])
+                    else:
+                        display_files.append(f)
+                
                 # Generate tree with links to file pages
                 tree_html, file_to_anchor = tree_generator.generate_linked_tree_html(
-                    root, files, self.config.exclude_dirs
+                    root, display_files, self.config.exclude_dirs
                 )
 
                 # Add tree heading
@@ -214,14 +256,29 @@ class PrettipyConverter:
             if idx > 0:
                 story.append(PageBreak())
 
-            try:
-                rel_path = file_path.relative_to(root)
-            except ValueError:
-                rel_path = file_path
+            # Check if this is a converted notebook file
+            original_ipynb_path = self.ipynb_to_py_map.get(file_path)
+            
+            # Determine the display path and file to read from
+            if original_ipynb_path:
+                # For converted notebooks, show the original .ipynb name in PDF
+                try:
+                    display_path = original_ipynb_path.relative_to(root)
+                except ValueError:
+                    display_path = original_ipynb_path
+                # Use a notebook emoji for .ipynb files
+                file_emoji = "📓"
+            else:
+                # For regular .py files
+                try:
+                    display_path = file_path.relative_to(root)
+                except ValueError:
+                    display_path = file_path
+                file_emoji = "📄"
 
             # Get anchor for this file if directory tree is enabled
             anchor_name = (
-                file_to_anchor.get(str(rel_path), "") if self.config.show_directory_tree else ""
+                file_to_anchor.get(str(display_path), "") if self.config.show_directory_tree else ""
             )
 
             back_link_html = ""
@@ -231,9 +288,9 @@ class PrettipyConverter:
             # File header with emoji, anchor, and back link
             if anchor_name:
                 # Add anchor to the file header so links from tree work
-                file_header_html = f'<a name="{anchor_name}"/>📄 {html.escape(str(rel_path))}'
+                file_header_html = f'<a name="{anchor_name}"/>{file_emoji} {html.escape(str(display_path))}'
             else:
-                file_header_html = f"📄 {html.escape(str(rel_path))}"
+                file_header_html = f"{file_emoji} {html.escape(str(display_path))}"
 
             if back_link_html:
                 file_header_html = f"{file_header_html}{back_link_html}"
