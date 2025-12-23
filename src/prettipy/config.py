@@ -39,6 +39,7 @@ class PrettipyConfig:
     )
     exclude_patterns: List[str] = field(default_factory=list)
     include_patterns: List[str] = field(default_factory=lambda: ["*.py"])
+    include_ipynb: bool = False  # Whether to include .ipynb files (converted to .py)
 
     # Formatting options
     max_line_width: int = 90
@@ -102,6 +103,7 @@ class PrettipyConfig:
             "exclude_dirs": list(self.exclude_dirs),
             "exclude_patterns": self.exclude_patterns,
             "include_patterns": self.include_patterns,
+            "include_ipynb": self.include_ipynb,
             "max_line_width": self.max_line_width,
             "font_size": self.font_size,
             "line_spacing": self.line_spacing,
