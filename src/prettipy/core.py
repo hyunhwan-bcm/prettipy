@@ -17,7 +17,6 @@ from .syntax import SyntaxHighlighter
 from .styles import StyleManager
 from .sorting import sort_files
 from .tree import DirectoryTreeGenerator
-from .notebook_handler import convert_notebook_to_python, cleanup_converted_notebook
 
 
 class PrettipyConverter:
@@ -35,7 +34,6 @@ class PrettipyConverter:
         self.highlighter = SyntaxHighlighter(enable_linking=self.config.enable_linking)
         self.style_manager = StyleManager(theme=self.config.theme)
         self.styles = self.style_manager.get_styles()
-        self.converted_notebooks: List[Path] = []  # Track converted .ipynb -> .py files
 
     def find_python_files(self, directory: Path) -> List[Path]:
         """
@@ -53,26 +51,6 @@ class PrettipyConverter:
             for file_path in directory.rglob(pattern):
                 if not self.config.should_exclude_path(file_path):
                     py_files.append(file_path)
-
-        # If include_ipynb is enabled, find and convert .ipynb files
-        if self.config.include_ipynb:
-            ipynb_files = []
-            for file_path in directory.rglob("*.ipynb"):
-                if not self.config.should_exclude_path(file_path):
-                    ipynb_files.append(file_path)
-
-            # Convert each notebook to Python
-            for notebook_path in ipynb_files:
-                try:
-                    converted_path = convert_notebook_to_python(
-                        notebook_path, verbose=self.config.verbose
-                    )
-                    if converted_path and converted_path.exists():
-                        py_files.append(converted_path)
-                        self.converted_notebooks.append(converted_path)
-                except Exception as e:
-                    if self.config.verbose:
-                        print(f"Warning: Failed to convert {notebook_path}: {e}")
 
         # Apply sorting based on configuration
         try:
@@ -280,10 +258,5 @@ class PrettipyConverter:
 
         # Build PDF
         doc.build(story)
-
-        # Cleanup converted notebook files
-        for converted_path in self.converted_notebooks:
-            cleanup_converted_notebook(converted_path, verbose=self.config.verbose)
-        self.converted_notebooks.clear()
 
         print(f"✓ Created {output_path} with {len(files)} files")
