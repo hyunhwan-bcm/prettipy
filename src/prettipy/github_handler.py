@@ -109,7 +109,17 @@ class GitHubHandler:
                 depth=1,  # Shallow clone for efficiency
             )
 
-            actual_branch = repo.active_branch.name if repo.active_branch else "main"
+            # Get the actual active branch name
+            # Try to get from active_branch, fallback to head reference
+            try:
+                actual_branch = repo.active_branch.name
+            except TypeError:
+                # active_branch might be None in some cases
+                try:
+                    actual_branch = repo.head.reference.name
+                except Exception:
+                    # Last resort fallback
+                    actual_branch = "HEAD"
 
             if self.verbose:
                 print(f"Successfully cloned to {self.temp_dir}")

@@ -226,6 +226,14 @@ For more information, visit: https://github.com/yourusername/prettipy
             self._init_config()
             return 0
 
+        # Validate conflicting arguments
+        if args.github_url and args.files:
+            self._print_error(
+                "Cannot use --github with --files. "
+                "GitHub mode converts the entire cloned repository."
+            )
+            return 1
+
         self._print_header()
 
         # Load configuration
@@ -291,13 +299,9 @@ For more information, visit: https://github.com/yourusername/prettipy
 
             except GitHubHandlerError as e:
                 self._print_error(str(e))
-                if github_handler:
-                    github_handler.cleanup()
                 return 1
             except Exception as e:
                 self._print_error(f"Unexpected error while cloning repository: {e}")
-                if github_handler:
-                    github_handler.cleanup()
                 return 1
 
         # Convert files
@@ -327,13 +331,9 @@ For more information, visit: https://github.com/yourusername/prettipy
 
         except FileNotFoundError as e:
             self._print_error(str(e))
-            if github_handler:
-                github_handler.cleanup()
             return 1
         except PermissionError as e:
             self._print_error(f"Permission denied: {e}")
-            if github_handler:
-                github_handler.cleanup()
             return 1
         except Exception as e:
             self._print_error(f"An error occurred: {e}")
@@ -341,8 +341,6 @@ For more information, visit: https://github.com/yourusername/prettipy
                 import traceback
 
                 traceback.print_exc()
-            if github_handler:
-                github_handler.cleanup()
             return 1
         finally:
             # Always clean up GitHub temporary directory
