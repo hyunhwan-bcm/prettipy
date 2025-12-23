@@ -9,7 +9,7 @@ import html
 from pathlib import Path
 from typing import List, Optional, Dict
 from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, KeepTogether
 
 from .config import PrettipyConfig
 from .formatter import CodeFormatter
@@ -156,6 +156,51 @@ class PrettipyConverter:
         root = Path.cwd()
 
         self._generate_pdf(root, file_paths, output_path)
+
+    def _create_code_block(self, highlighted_lines: List[str]) -> List:
+        """
+        Create a code block from highlighted lines.
+        
+        This method creates individual Paragraph elements for each line
+        to ensure proper line spacing and prevent overlapping text.
+        
+        Args:
+            highlighted_lines: List of HTML-highlighted code lines
+            
+        Returns:
+            List of flowable elements to add to the story
+        """
+        from reportlab.platypus import Table, TableStyle
+        from reportlab.lib import colors
+        
+        # Create a table with one column to simulate a bordered code block
+        # Each row contains one line of code
+        table_data = []
+        for line in highlighted_lines:
+            # Create a paragraph for each line with no vertical spacing
+            para = Paragraph(line, self.styles["code_line"])
+            table_data.append([para])
+        
+        # Create the table
+        code_table = Table(
+            table_data,
+            colWidths=[None],  # Auto width
+        )
+        
+        # Apply table styling to create the code block appearance
+        code_table.setStyle(
+            TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f8f8f8")),
+                ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#e0e0e0")),
+                ('LEFTPADDING', (0, 0), (-1, -1), 12),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ])
+        )
+        
+        return [code_table, Spacer(1, 10)]
 
     def _generate_pdf(self, root: Path, files: List[Path], output_path: str):
         """
@@ -305,9 +350,10 @@ class PrettipyConverter:
                 # This correctly handles triple-quoted strings and other multiline constructs
                 highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
 
-                # Create code block
-                full_code_html = "<br/>".join(highlighted_lines)
-                story.append(Paragraph(full_code_html, self.styles["code"]))
+                # Create code block using individual paragraphs for each line
+                # This prevents line overlapping issues that occur with <br/> tags
+                code_elements = self._create_code_block(highlighted_lines)
+                story.extend(code_elements)
 
             except Exception as e:
                 error_msg = f"Error reading file: {html.escape(str(e))}"
