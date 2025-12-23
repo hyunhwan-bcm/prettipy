@@ -102,16 +102,12 @@ class TestPrettipyConverter:
         """Test directory tree with custom depth."""
         # Create test files
         (tmp_path / "main.py").write_text("print('main')")
-        
+
         output_pdf = tmp_path / "output_tree_depth.pdf"
 
-        config = PrettipyConfig(
-            show_directory_tree=True,
-            directory_tree_max_depth=2
-        )
+        config = PrettipyConfig(show_directory_tree=True, directory_tree_max_depth=2)
         converter = PrettipyConverter(config)
         converter.convert_directory(str(tmp_path), str(output_pdf))
 
         assert output_pdf.exists()
         assert output_pdf.stat().st_size > 0
-

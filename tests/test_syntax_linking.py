@@ -12,16 +12,16 @@ class TestSyntaxHighlighterLinking:
         highlighter = SyntaxHighlighter(enable_linking=True)
         code = """def calculate_sum(a, b):
     return a + b"""
-        
+
         # Prepare for linking
         highlighter.prepare_for_linking(code)
-        
+
         # Highlight the definition line
         result = highlighter.highlight_line("def calculate_sum(a, b):")
-        
+
         # Should contain an anchor tag
         assert '<a name="def_calculate_sum"></a>' in result
-        assert 'calculate_sum' in result
+        assert "calculate_sum" in result
 
     def test_function_call_gets_link(self):
         """Test that function calls get link tags."""
@@ -30,19 +30,19 @@ class TestSyntaxHighlighterLinking:
     return a + b
 
 result = calculate_sum(5, 10)"""
-        
+
         # Prepare for linking
         highlighter.prepare_for_linking(code)
-        
+
         # Mark that the anchor will be created (simulate pre-marking phase)
-        highlighter.symbol_tracker.mark_anchor_created('calculate_sum')
-        
+        highlighter.symbol_tracker.mark_anchor_created("calculate_sum")
+
         # Highlight the definition line first (to create anchor)
         highlighter.highlight_line("def calculate_sum(a, b):")
-        
+
         # Highlight the call line
         result = highlighter.highlight_line("result = calculate_sum(5, 10)")
-        
+
         # Should contain a link tag
         assert '<a href="#def_calculate_sum">' in result
 
@@ -53,13 +53,13 @@ result = calculate_sum(5, 10)"""
     pass
 
 obj = MyClass()"""
-        
+
         # Prepare for linking
         highlighter.prepare_for_linking(code)
-        
+
         # Highlight the definition line
         result = highlighter.highlight_line("class MyClass:")
-        
+
         # Should contain an anchor tag
         assert '<a name="def_MyClass"></a>' in result
 
@@ -68,13 +68,13 @@ obj = MyClass()"""
         highlighter = SyntaxHighlighter(enable_linking=True)
         code = """my_var = 42
 print(my_var)"""
-        
+
         # Prepare for linking
         highlighter.prepare_for_linking(code)
-        
+
         # Highlight the assignment line
         result = highlighter.highlight_line("my_var = 42")
-        
+
         # Should contain an anchor tag
         assert '<a name="def_my_var"></a>' in result
 
@@ -83,25 +83,25 @@ print(my_var)"""
         highlighter = SyntaxHighlighter(enable_linking=False)
         code = """def test_func():
     pass"""
-        
+
         # Don't prepare for linking
         result = highlighter.highlight_line("def test_func():")
-        
+
         # Should not contain anchor or link tags
-        assert '<a name=' not in result
-        assert '<a href=' not in result
+        assert "<a name=" not in result
+        assert "<a href=" not in result
 
     def test_preserves_syntax_highlighting(self):
         """Test that linking preserves syntax highlighting."""
         highlighter = SyntaxHighlighter(enable_linking=True)
         code = """def my_function():
     return 42"""
-        
+
         highlighter.prepare_for_linking(code)
         result = highlighter.highlight_line("def my_function():")
-        
+
         # Should still have color tags
-        assert '<font color=' in result
+        assert "<font color=" in result
         # And should have anchor
         assert '<a name="def_my_function"></a>' in result
 
@@ -112,15 +112,15 @@ print(my_var)"""
     pass
 
 msg = "hello world" """
-        
+
         highlighter.prepare_for_linking(code)
-        
+
         # Highlight the definition
         highlighter.highlight_line("def hello():")
-        
+
         # Highlight the string line - "hello" in string should not be linked
         result = highlighter.highlight_line('msg = "hello world"')
-        
+
         # The word "hello" in the string should not have a link
         # (Pygments will tokenize it as String, not Name)
         # So there should be no href to hello in this line

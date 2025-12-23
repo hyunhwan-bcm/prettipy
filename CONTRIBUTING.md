@@ -45,28 +45,51 @@ We welcome feature suggestions! Please:
    - Add tests for new features
    - Update documentation as needed
 
-4. **Test your changes**:
+4. **Set up pre-commit hooks** (recommended):
    ```bash
-   pytest
-   black src/prettipy tests
-   flake8 src/prettipy tests
+   pip install pre-commit
+   pre-commit install
+   ```
+   This will automatically run black formatting and pytest before each commit.
+
+5. **Test your changes**:
+   ```bash
+   # Run tests
+   pytest tests/ -v
+   
+   # Check code formatting
+   black --check .
+   
+   # Or run all pre-commit hooks manually
+   pre-commit run --all-files
    ```
 
-5. **Commit your changes**:
+6. **Commit your changes**:
    ```bash
    git commit -m "Add feature: description"
    ```
    Use clear, descriptive commit messages.
+   
+   **Note:** If you've installed pre-commit hooks, they will run automatically before the commit.
+   - **Black** will check code formatting (commits are rejected if code isn't formatted)
+   - **Pytest** will run all tests (commits are rejected if tests fail)
+   
+   If hooks fail, fix the issues and try committing again.
 
-6. **Push to your fork**:
+7. **Push to your fork**:
    ```bash
    git push origin feature/your-feature-name
    ```
 
-7. **Create a Pull Request**:
+8. **Create a Pull Request**:
    - Provide a clear title and description
    - Reference any related issues
    - Explain what changed and why
+   
+   **Note:** GitHub Actions CI will automatically run when you create a PR:
+   - Tests will run on Python 3.8-3.12
+   - Black formatting will be checked
+   - PRs cannot be merged if CI checks fail
 
 ## Development Setup
 
@@ -81,6 +104,36 @@ source venv/bin/activate
 pip install -e ".[dev,rich]"
 pytest
 ```
+
+### Pre-commit Hooks Setup
+
+Pre-commit hooks help catch issues before they're committed:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install the git hooks
+pre-commit install
+
+# (Optional) Run hooks on all files
+pre-commit run --all-files
+```
+
+Once installed, hooks will automatically run on each commit:
+- **Black**: Ensures code is properly formatted
+- **Pytest**: Runs all tests to prevent broken code from being committed
+
+If a hook fails, the commit is rejected. Fix the issues and try again.
+
+### Continuous Integration (CI)
+
+GitHub Actions automatically runs checks on all pushes and pull requests:
+
+1. **Test Job**: Runs pytest on Python 3.8, 3.9, 3.10, 3.11, and 3.12
+2. **Lint Job**: Validates code formatting with black
+
+All CI checks must pass before a PR can be merged. You can view CI results in the "Checks" tab of your PR.
 
 ## Coding Guidelines
 

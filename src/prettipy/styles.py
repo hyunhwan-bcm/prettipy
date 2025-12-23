@@ -21,24 +21,24 @@ class StyleManager:
 
     # Common monospace fonts by platform
     MONOSPACE_FONTS = {
-        'darwin': [  # macOS
-            '~/Library/Fonts/FiraCodeNerdFontMono-Regular.ttf',
-            '/Library/Fonts/Courier New.ttf',
-            '/System/Library/Fonts/Monaco.ttf',
+        "darwin": [  # macOS
+            "~/Library/Fonts/FiraCodeNerdFontMono-Regular.ttf",
+            "/Library/Fonts/Courier New.ttf",
+            "/System/Library/Fonts/Monaco.ttf",
         ],
-        'linux': [
-            '~/.local/share/fonts/FiraCode-Regular.ttf',
-            '/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf',
-            '/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf',
+        "linux": [
+            "~/.local/share/fonts/FiraCode-Regular.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
         ],
-        'win32': [
-            'C:\\Windows\\Fonts\\FiraCode-Regular.ttf',
-            'C:\\Windows\\Fonts\\consola.ttf',
-            'C:\\Windows\\Fonts\\cour.ttf',
-        ]
+        "win32": [
+            "C:\\Windows\\Fonts\\FiraCode-Regular.ttf",
+            "C:\\Windows\\Fonts\\consola.ttf",
+            "C:\\Windows\\Fonts\\cour.ttf",
+        ],
     }
 
-    def __init__(self, theme: str = 'default'):
+    def __init__(self, theme: str = "default"):
         """
         Initialize the style manager.
 
@@ -59,10 +59,7 @@ class StyleManager:
         """
         system = platform.system().lower()
         font_paths = self.MONOSPACE_FONTS.get(
-            'darwin' if system == 'darwin' else
-            'linux' if 'linux' in system else
-            'win32',
-            []
+            "darwin" if system == "darwin" else "linux" if "linux" in system else "win32", []
         )
 
         # Try to register fonts in order of preference
@@ -70,37 +67,37 @@ class StyleManager:
             expanded_path = Path(font_path).expanduser()
             if expanded_path.exists():
                 try:
-                    pdfmetrics.registerFont(TTFont('CodeFont', str(expanded_path)))
-                    return 'CodeFont'
+                    pdfmetrics.registerFont(TTFont("CodeFont", str(expanded_path)))
+                    return "CodeFont"
                 except Exception:
                     continue
 
         # Fallback to Courier
-        return 'Courier'
+        return "Courier"
 
     def _init_custom_styles(self):
         """Initialize all custom paragraph styles."""
         self.title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=self.base_styles['Heading1'],
+            "CustomTitle",
+            parent=self.base_styles["Heading1"],
             fontSize=24,
-            textColor=HexColor('#1a1a1a'),
+            textColor=HexColor("#1a1a1a"),
             spaceAfter=12,
-            fontName='Helvetica-Bold'
+            fontName="Helvetica-Bold",
         )
 
         self.file_header_style = ParagraphStyle(
-            'FileHeader',
-            parent=self.base_styles['Heading2'],
+            "FileHeader",
+            parent=self.base_styles["Heading2"],
             fontSize=12,
-            textColor=HexColor('#0066cc'),
+            textColor=HexColor("#0066cc"),
             spaceAfter=20,
             spaceBefore=12,
-            fontName='Helvetica-Bold'
+            fontName="Helvetica-Bold",
         )
 
         self.code_container_style = ParagraphStyle(
-            'CodeContainer',
+            "CodeContainer",
             fontName=self.font_name,
             fontSize=9,
             leading=14,
@@ -108,31 +105,31 @@ class StyleManager:
             rightIndent=0,
             spaceBefore=0,
             spaceAfter=10,
-            backColor=HexColor('#f8f8f8'),
-            borderColor=HexColor('#e0e0e0'),
+            backColor=HexColor("#f8f8f8"),
+            borderColor=HexColor("#e0e0e0"),
             borderWidth=1,
             borderPadding=12,
-            alignment=TA_LEFT
+            alignment=TA_LEFT,
         )
 
         self.info_style = ParagraphStyle(
-            'InfoStyle',
-            parent=self.base_styles['Normal'],
+            "InfoStyle",
+            parent=self.base_styles["Normal"],
             fontSize=10,
-            textColor=HexColor('#333333'),
-            spaceAfter=6
+            textColor=HexColor("#333333"),
+            spaceAfter=6,
         )
 
         self.error_style = ParagraphStyle(
-            'ErrorStyle',
-            parent=self.base_styles['Normal'],
+            "ErrorStyle",
+            parent=self.base_styles["Normal"],
             fontSize=10,
-            textColor=HexColor('#cc0000'),
-            fontName='Helvetica-Oblique'
+            textColor=HexColor("#cc0000"),
+            fontName="Helvetica-Oblique",
         )
 
         self.tree_style = ParagraphStyle(
-            'TreeStyle',
+            "TreeStyle",
             fontName=self.font_name,
             fontSize=9,
             leading=14,
@@ -140,11 +137,11 @@ class StyleManager:
             rightIndent=0,
             spaceBefore=12,
             spaceAfter=12,
-            backColor=HexColor('#f8f8f8'),
-            borderColor=HexColor('#e0e0e0'),
+            backColor=HexColor("#f8f8f8"),
+            borderColor=HexColor("#e0e0e0"),
             borderWidth=1,
             borderPadding=12,
-            alignment=TA_LEFT
+            alignment=TA_LEFT,
         )
 
     def get_page_margins(self) -> Tuple[float, float, float, float]:
@@ -164,10 +161,10 @@ class StyleManager:
             Dictionary mapping style names to ParagraphStyle objects
         """
         return {
-            'title': self.title_style,
-            'file_header': self.file_header_style,
-            'code': self.code_container_style,
-            'info': self.info_style,
-            'error': self.error_style,
-            'tree': self.tree_style
+            "title": self.title_style,
+            "file_header": self.file_header_style,
+            "code": self.code_container_style,
+            "info": self.info_style,
+            "error": self.error_style,
+            "tree": self.tree_style,
         }

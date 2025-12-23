@@ -54,9 +54,9 @@ class TestSyntaxHighlighter:
         highlighter = SyntaxHighlighter()
         code = '"""\nThis is a docstring.\nIt spans multiple lines.\n"""'
         lines = highlighter.highlight_code_multiline_aware(code)
-        
+
         # All lines should contain string color
-        string_color = '#4070a0'
+        string_color = "#4070a0"
         assert string_color in lines[0], "Opening quotes should be highlighted"
         assert string_color in lines[1], "First line of content should be highlighted as string"
         assert string_color in lines[2], "Second line of content should be highlighted as string"
@@ -67,9 +67,9 @@ class TestSyntaxHighlighter:
         highlighter = SyntaxHighlighter()
         code = "'''\nMultiline string\nwith single quotes\n'''"
         lines = highlighter.highlight_code_multiline_aware(code)
-        
+
         # All lines should contain string color
-        string_color = '#4070a0'
+        string_color = "#4070a0"
         assert string_color in lines[0], "Opening quotes should be highlighted"
         assert string_color in lines[1], "First line of content should be highlighted as string"
         assert string_color in lines[2], "Second line of content should be highlighted as string"
@@ -85,9 +85,9 @@ class TestSyntaxHighlighter:
     """
     pass'''
         lines = highlighter.highlight_code_multiline_aware(code)
-        
+
         # Check that docstring lines are highlighted as strings
-        string_color = '#4070a0'
+        string_color = "#4070a0"
         assert string_color in lines[1], "Opening docstring quotes should be highlighted"
         assert string_color in lines[2], "Docstring content should be highlighted as string"
         assert string_color in lines[3], "Docstring content should be highlighted as string"
@@ -108,10 +108,10 @@ def func():
     x = 1
     return x'''
         lines = highlighter.highlight_code_multiline_aware(code)
-        
+
         # First line should have string highlighting
-        assert '#4070a0' in lines[0]
+        assert "#4070a0" in lines[0]
         # Empty line
-        assert lines[1] == '<br/>'
+        assert lines[1] == "<br/>"
         # Function definition should have keyword highlighting
-        assert '#007020' in lines[2]  # 'def' keyword color
+        assert "#007020" in lines[2]  # 'def' keyword color

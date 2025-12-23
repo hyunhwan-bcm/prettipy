@@ -76,7 +76,7 @@ class TestDirectoryTreeGenerator:
         # Check that tree text contains expected elements
         assert tmp_path.name in tree_text or str(tmp_path) in tree_text
         # Tree should have some structure characters
-        assert any(char in tree_text for char in ['├', '└', '│', '-', '/'])
+        assert any(char in tree_text for char in ["├", "└", "│", "-", "/"])
 
     def test_generate_linked_tree_html(self, tmp_path):
         """Test generating linked tree HTML."""
@@ -86,9 +86,7 @@ class TestDirectoryTreeGenerator:
 
         files = [file1]
         generator = DirectoryTreeGenerator()
-        tree_html, file_to_anchor = generator.generate_linked_tree_html(
-            tmp_path, files
-        )
+        tree_html, file_to_anchor = generator.generate_linked_tree_html(tmp_path, files)
 
         # Check that HTML was generated
         assert tree_html is not None
@@ -101,7 +99,7 @@ class TestDirectoryTreeGenerator:
         # Check that HTML contains link markup
         if "test.py" in tree_html:
             # The link should be present
-            assert '<a href="#' in tree_html or 'test.py' in tree_html
+            assert '<a href="#' in tree_html or "test.py" in tree_html
 
     def test_generate_tree_with_exclude_dirs(self, tmp_path):
         """Test generating tree with excluded directories."""
@@ -113,7 +111,7 @@ class TestDirectoryTreeGenerator:
 
         files = [tmp_path / "main.py"]
         exclude_dirs = {"venv", "__pycache__"}
-        
+
         generator = DirectoryTreeGenerator()
         tree_text = generator.generate_tree_text(tmp_path, files, exclude_dirs)
 
@@ -126,10 +124,10 @@ class TestDirectoryTreeGenerator:
         # Try to generate tree for non-existent path
         fake_path = tmp_path / "nonexistent"
         generator = DirectoryTreeGenerator()
-        
+
         # Should not raise an exception
         tree_text = generator.generate_tree_text(fake_path, [])
-        
+
         # Should return some fallback text
         assert tree_text is not None
         assert len(tree_text) > 0

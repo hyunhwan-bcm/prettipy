@@ -54,8 +54,9 @@ class PrettipyConverter:
 
         # Apply sorting based on configuration
         try:
-            sorted_files = sort_files(py_files, method=self.config.sort_method, 
-                                     reverse_deps=self.config.reverse_deps)
+            sorted_files = sort_files(
+                py_files, method=self.config.sort_method, reverse_deps=self.config.reverse_deps
+            )
             return sorted_files
         except ValueError as e:
             # If dependency sorting fails (e.g., circular dependencies),
@@ -63,7 +64,7 @@ class PrettipyConverter:
             if self.config.verbose:
                 print(f"Warning: {e}")
                 print("Falling back to lexicographic sorting")
-            return sort_files(py_files, method='lexicographic')
+            return sort_files(py_files, method="lexicographic")
 
     def convert_directory(self, directory: str = ".", output: Optional[str] = None):
         """
@@ -134,7 +135,7 @@ class PrettipyConverter:
             output_path: Output PDF file path
         """
         # Page size
-        page_size = A4 if self.config.page_size.lower() == 'a4' else letter
+        page_size = A4 if self.config.page_size.lower() == "a4" else letter
 
         # Create document
         margins = self.style_manager.get_page_margins()
@@ -144,7 +145,7 @@ class PrettipyConverter:
             topMargin=margins[0],
             bottomMargin=margins[1],
             leftMargin=margins[2],
-            rightMargin=margins[3]
+            rightMargin=margins[3],
         )
 
         story = []
@@ -153,7 +154,7 @@ class PrettipyConverter:
         if self.config.enable_linking:
             for file_path in files:
                 try:
-                    code = file_path.read_text(encoding='utf-8')
+                    code = file_path.read_text(encoding="utf-8")
                     self.highlighter.prepare_for_linking(code, clear_existing=False)
                 except Exception:
                     continue
@@ -162,46 +163,42 @@ class PrettipyConverter:
 
         # Title page
         title = self.config.title or f"Python Scripts from {root.name}/"
-        story.append(Paragraph(html.escape(title), self.styles['title']))
-        story.append(Paragraph(
-            f"<b>Total files:</b> {len(files)}",
-            self.styles['info']
-        ))
-        story.append(Paragraph(
-            f"<b>Generated from:</b> {html.escape(str(root))}",
-            self.styles['info']
-        ))
+        story.append(Paragraph(html.escape(title), self.styles["title"]))
+        story.append(Paragraph(f"<b>Total files:</b> {len(files)}", self.styles["info"]))
+        story.append(
+            Paragraph(f"<b>Generated from:</b> {html.escape(str(root))}", self.styles["info"])
+        )
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 
         # Create anchor mapping for directory tree links
         file_to_anchor = {}
         tree_anchor_name = "directory_tree"
         tree_anchor_exists = False
-        
+
         # Add directory tree if enabled
         if self.config.show_directory_tree:
-            tree_generator = DirectoryTreeGenerator(
-                max_depth=self.config.directory_tree_max_depth
-            )
-            
+            tree_generator = DirectoryTreeGenerator(max_depth=self.config.directory_tree_max_depth)
+
             try:
                 # Generate tree with links to file pages
                 tree_html, file_to_anchor = tree_generator.generate_linked_tree_html(
                     root, files, self.config.exclude_dirs
                 )
-                
+
                 # Add tree heading
-                story.append(Paragraph(
-                    f'<a name="{tree_anchor_name}"/><b>📂 Directory Structure</b>',
-                    self.styles['info']
-                ))
+                story.append(
+                    Paragraph(
+                        f'<a name="{tree_anchor_name}"/><b>📂 Directory Structure</b>',
+                        self.styles["info"],
+                    )
+                )
                 story.append(Spacer(1, 0.1 * 72))
                 tree_anchor_exists = True
-                
+
                 # Add the tree
-                story.append(Paragraph(tree_html, self.styles['tree']))
+                story.append(Paragraph(tree_html, self.styles["tree"]))
                 story.append(Spacer(1, 0.2 * 72))
-                
+
             except Exception as e:
                 if self.config.verbose:
                     print(f"Warning: Failed to generate directory tree: {e}")
@@ -223,13 +220,13 @@ class PrettipyConverter:
                 rel_path = file_path
 
             # Get anchor for this file if directory tree is enabled
-            anchor_name = file_to_anchor.get(str(rel_path), '') if self.config.show_directory_tree else ''
+            anchor_name = (
+                file_to_anchor.get(str(rel_path), "") if self.config.show_directory_tree else ""
+            )
 
-            back_link_html = ''
+            back_link_html = ""
             if tree_anchor_exists:
-                back_link_html = (
-                    f' <font size="9"><a href="#{tree_anchor_name}" color="blue"><u>← Back</u></a></font>'
-                )
+                back_link_html = f' <font size="9"><a href="#{tree_anchor_name}" color="blue"><u>← Back</u></a></font>'
 
             # File header with emoji, anchor, and back link
             if anchor_name:
@@ -240,30 +237,24 @@ class PrettipyConverter:
 
             if back_link_html:
                 file_header_html = f"{file_header_html}{back_link_html}"
-            
-            story.append(Paragraph(
-                file_header_html,
-                self.styles['file_header']
-            ))
+
+            story.append(Paragraph(file_header_html, self.styles["file_header"]))
 
             # Process file content
             try:
-                code = file_path.read_text(encoding='utf-8')
-                
+                code = file_path.read_text(encoding="utf-8")
+
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs
                 highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
-                
+
                 # Create code block
-                full_code_html = '<br/>'.join(highlighted_lines)
-                story.append(Paragraph(full_code_html, self.styles['code']))
+                full_code_html = "<br/>".join(highlighted_lines)
+                story.append(Paragraph(full_code_html, self.styles["code"]))
 
             except Exception as e:
-                error_msg = f'Error reading file: {html.escape(str(e))}'
-                story.append(Paragraph(
-                    f'<i>{error_msg}</i>',
-                    self.styles['error']
-                ))
+                error_msg = f"Error reading file: {html.escape(str(e))}"
+                story.append(Paragraph(f"<i>{error_msg}</i>", self.styles["error"]))
 
         # Build PDF
         doc.build(story)

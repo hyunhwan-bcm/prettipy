@@ -21,8 +21,18 @@ class CodeFormatter:
         """
         self.max_width = max_width
         self.break_chars = [
-            ', ', ' + ', ' - ', ' * ', ' / ', ' = ',
-            ' and ', ' or ', ' if ', ' else ', ' (', ' ['
+            ", ",
+            " + ",
+            " - ",
+            " * ",
+            " / ",
+            " = ",
+            " and ",
+            " or ",
+            " if ",
+            " else ",
+            " (",
+            " [",
         ]
 
     def wrap_line(self, line: str) -> List[str]:
@@ -39,7 +49,7 @@ class CodeFormatter:
             return [line]
 
         # Check if line has a comment
-        comment_match = re.search(r'#.*', line)
+        comment_match = re.search(r"#.*", line)
         if comment_match:
             return self._wrap_line_with_comment(line, comment_match)
 
@@ -57,21 +67,21 @@ class CodeFormatter:
         Returns:
             List of wrapped lines
         """
-        code_part = line[:comment_match.start()].rstrip()
-        comment_part = line[comment_match.start():]
+        code_part = line[: comment_match.start()].rstrip()
+        comment_part = line[comment_match.start() :]
 
         # If code part fits, just wrap the comment
         if len(code_part) <= self.max_width:
             lines = [code_part]
             # Wrap comment if needed
-            if len(code_part + ' ' + comment_part) > self.max_width:
-                lines[0] = code_part + ' ' + comment_part[:self.max_width - len(code_part)]
-                remaining = comment_part[self.max_width - len(code_part):].lstrip()
+            if len(code_part + " " + comment_part) > self.max_width:
+                lines[0] = code_part + " " + comment_part[: self.max_width - len(code_part)]
+                remaining = comment_part[self.max_width - len(code_part) :].lstrip()
                 if remaining:
                     indent = len(line) - len(line.lstrip())
-                    lines.append(' ' * (indent + 4) + remaining)
+                    lines.append(" " * (indent + 4) + remaining)
             else:
-                lines[0] = code_part + ' ' + comment_part
+                lines[0] = code_part + " " + comment_part
             return lines
 
         # Code part is too long, wrap it first
@@ -101,7 +111,7 @@ class CodeFormatter:
                 best_break = self.max_width
 
             lines.append(current[:best_break].rstrip())
-            current = ' ' * continuation_indent + current[best_break:].lstrip()
+            current = " " * continuation_indent + current[best_break:].lstrip()
 
         if current.strip():
             lines.append(current)
