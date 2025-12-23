@@ -135,15 +135,6 @@ For more information, visit: https://github.com/yourusername/prettipy
             "(default: dependency)",
         )
 
-        parser.add_argument(
-            "--sort",
-            choices=["dependency", "dependency-rev", "lexicographic", "none"],
-            default="dependency",
-            help="File sorting method: dependency (providers first), dependency-rev "
-            "(dependents first), lexicographic (alphabetical), or none "
-            "(default: dependency)",
-        )
-
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
         parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
