@@ -105,7 +105,7 @@ class GitHubHandler:
             repo = Repo.clone_from(
                 repo_url,
                 str(self.temp_dir),
-                branch=branch if branch else None,
+                branch=branch,
                 depth=1,  # Shallow clone for efficiency
             )
 
@@ -113,12 +113,12 @@ class GitHubHandler:
             # Try to get from active_branch, fallback to head reference
             try:
                 actual_branch = repo.active_branch.name
-            except TypeError:
-                # active_branch might be None in some cases
+            except (TypeError, AttributeError):
+                # active_branch might be None or not have a name in some cases
                 try:
                     actual_branch = repo.head.reference.name
-                except Exception:
-                    # Last resort fallback
+                except (AttributeError, TypeError):
+                    # Last resort fallback for detached HEAD or other edge cases
                     actual_branch = "HEAD"
 
             if self.verbose:
