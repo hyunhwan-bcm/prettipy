@@ -44,10 +44,6 @@ def convert_notebook_to_python(notebook_path: Path, verbose: bool = False) -> Op
         exporter.exclude_output_prompt = True
         exporter.exclude_input_prompt = True
 
-        # Read and convert the notebook
-        with open(notebook_path, "r", encoding="utf-8") as f:
-            notebook_content = f.read()
-
         # Convert to Python script
         (body, resources) = exporter.from_filename(str(notebook_path))
 
