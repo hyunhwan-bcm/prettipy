@@ -150,9 +150,10 @@ Prettipy provides flexible options for sorting files in the generated PDF:
 
 ### Sorting Methods
 
-1. **Lexicographic (Alphabetical)** - Default method that sorts files alphabetically by filename
-2. **Dependency-Based** - Sorts files based on function call dependencies using topological sort
-3. **None** - No sorting, files appear in discovery order
+1. **Dependency** - Sorts files by dependencies with providers first (default)
+2. **Dependency-Rev** - Reverse dependency sorting with dependents first
+3. **Lexicographic (Alphabetical)** - Sorts files alphabetically by filename
+4. **None** - No sorting, files appear in discovery order
 
 ### Dependency-Based Sorting
 
@@ -160,17 +161,20 @@ The dependency sorting method analyzes your Python files to understand which fil
 
 - Files are treated as nodes in a Directed Acyclic Graph (DAG)
 - Dependencies are determined by analyzing function and class calls between files
-- Files with no dependencies appear first
-- Files that depend on others appear after their dependencies
+- **dependency**: Files with no dependencies appear first, dependents after their providers
+- **dependency-rev**: Files with dependents appear first, providers after
 - When multiple files are at the same dependency level, they are sorted alphabetically
 - Uses NetworkX library for robust topological sorting
 
 **Example:**
 ```bash
-# Sort by dependencies - files with dependencies appear after their dependencies
+# Sort by dependencies - providers first (default)
 prettipy --sort dependency
 
-# Sort alphabetically (default)
+# Reverse dependency sort - dependents first
+prettipy --sort dependency-rev
+
+# Sort alphabetically
 prettipy --sort lexicographic
 
 # No sorting - files in discovery order
@@ -194,35 +198,60 @@ You can also set the sorting method in your configuration file:
 ### Command Line Interface
 
 ```bash
-usage: prettipy [-h] [-o OUTPUT] [-f FILES [FILES ...]] [-w WIDTH]
-                [--config CONFIG] [-t TITLE] [--theme {default}]
-                [--page-size {letter,a4}] [--no-linking]
-                [--sort {dependency,lexicographic,none}] [-v] [--version]
-                [--init-config] [directory]
+usage: prettipy [-h] [-o OUTPUT] [-f FILES [FILES ...]] [-w WIDTH] [--config CONFIG] [-t TITLE] [--theme {default}]
+                [--page-size {letter,a4}] [--no-linking] [--show-tree] [--no-tree] [--tree-depth TREE_DEPTH]
+                [--sort {dependency,dependency-rev,lexicographic,none}] [-v] [--version] [--init-config]
+                [--github GITHUB_URL] [--branch GITHUB_BRANCH]
+                [directory]
 
 Convert Python code to beautifully formatted PDFs
 
 positional arguments:
-  directory             Directory to scan for Python files (default: current)
+  directory             Directory to scan for Python files (default: current directory)
 
-optional arguments:
-  -h, --help            Show this help message and exit
-  -o, --output OUTPUT   Output PDF file path (default: output.pdf)
-  -f, --files FILES     Specific Python files to convert
-  -w, --width WIDTH     Maximum line width before wrapping (default: 90)
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output PDF file path (default: output.pdf)
+  -f FILES [FILES ...], --files FILES [FILES ...]
+                        Specific Python files to convert
+  -w WIDTH, --width WIDTH
+                        Maximum line width before wrapping (default: 90)
   --config CONFIG       Path to configuration JSON file
-  -t, --title TITLE     Custom title for the PDF document
-  --theme {default}     Color theme to use
+  -t TITLE, --title TITLE
+                        Custom title for the PDF document
+  --theme {default}     Color theme to use (default: default)
   --page-size {letter,a4}
                         PDF page size (default: letter)
   --no-linking          Disable auto-linking to function/variable definitions
-  --sort {dependency,lexicographic,none}
-                        File sorting method (default: lexicographic)
-  --github URL          Clone and convert a GitHub repository
-  --branch, -b BRANCH   Branch to checkout when cloning (default: repo's default branch)
+  --show-tree           Show directory tree structure on the first page with clickable links to files
+  --no-tree             Hide the directory tree on the first page
+  --tree-depth TREE_DEPTH
+                        Maximum depth for directory tree display (default: 5)
+  --sort {dependency,dependency-rev,lexicographic,none}
+                        File sorting method: dependency (providers first), dependency-rev (dependents first),
+                        lexicographic (alphabetical), or none (default: dependency)
   -v, --verbose         Enable verbose output
-  --version             Show program's version number and exit
+  --version             show program's version number and exit
   --init-config         Generate a sample configuration file
+  --github GITHUB_URL   Clone and convert a GitHub repository (e.g., https://github.com/user/repo)
+  --branch GITHUB_BRANCH, -b GITHUB_BRANCH
+                        Branch to checkout when cloning GitHub repository (default: repository's default branch)
+
+Examples:
+  prettipy                             # Convert current directory
+  prettipy /path/to/project            # Convert specific directory
+  prettipy -o output.pdf               # Specify output file
+  prettipy -f file1.py file2.py        # Convert specific files
+  prettipy -w 100                      # Set max line width to 100
+  prettipy --config my-config.json     # Use custom configuration
+  prettipy --sort dependency           # Sort files by dependencies
+  prettipy --sort lexicographic        # Sort files alphabetically
+  prettipy --sort none                 # No sorting (discovery order)
+  prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
+  prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
+
+For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 ```
 
 ### Examples
