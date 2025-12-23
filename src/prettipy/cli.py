@@ -57,6 +57,7 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
+  prettipy --include-ipynb             # Include Jupyter notebooks (.ipynb files)
   prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
   prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
