@@ -41,6 +41,10 @@ class PrettipyConfig:
     
     # Linking
     enable_linking: bool = True
+    
+    # Directory tree
+    show_directory_tree: bool = True
+    directory_tree_max_depth: int = 5
 
     sort_method: str = 'dependency'  # 'dependency', 'dependency-rev', 'lexicographic', or 'none'
     reverse_deps: bool = False  # For dependency sorting, reverse the order
@@ -92,6 +96,8 @@ class PrettipyConfig:
             'show_line_numbers': self.show_line_numbers,
             'theme': self.theme,
             'enable_linking': self.enable_linking,
+            'show_directory_tree': self.show_directory_tree,
+            'directory_tree_max_depth': self.directory_tree_max_depth,
             'sort_method': self.sort_method,
             'reverse_deps': self.reverse_deps,
             'output_file': self.output_file,

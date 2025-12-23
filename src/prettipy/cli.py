@@ -118,6 +118,25 @@ For more information, visit: https://github.com/yourusername/prettipy
         )
 
         parser.add_argument(
+            '--show-tree',
+            action='store_true',
+            help='Show directory tree structure on the first page with clickable links to files'
+        )
+
+        parser.add_argument(
+            '--no-tree',
+            action='store_true',
+            help='Hide the directory tree on the first page'
+        )
+
+        parser.add_argument(
+            '--tree-depth',
+            type=int,
+            default=5,
+            help='Maximum depth for directory tree display (default: 5)'
+        )
+
+        parser.add_argument(
             '--sort',
             choices=['dependency', 'dependency-rev', 'lexicographic', 'none'],
             default='dependency',
@@ -230,6 +249,15 @@ For more information, visit: https://github.com/yourusername/prettipy
             
             if args.no_linking:
                 config.enable_linking = False
+            
+            if args.show_tree:
+                config.show_directory_tree = True
+
+            if getattr(args, 'no_tree', False):
+                config.show_directory_tree = False
+            
+            if hasattr(args, 'tree_depth'):
+                config.directory_tree_max_depth = args.tree_depth
 
             if args.title:
                 config.title = args.title
