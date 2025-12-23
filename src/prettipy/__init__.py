@@ -5,7 +5,7 @@ A Python package that converts Python source code into beautifully formatted,
 syntax-highlighted PDF documents.
 """
 
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
 
