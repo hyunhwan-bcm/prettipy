@@ -65,7 +65,7 @@ def main():
         sys.exit(1)
     
     # File paths
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).resolve().parents[2]
     pyproject_path = repo_root / "pyproject.toml"
     init_path = repo_root / "src" / "prettipy" / "__init__.py"
     
@@ -81,8 +81,7 @@ def main():
     update_version_in_file(pyproject_path, current_version, new_version)
     update_version_in_file(init_path, current_version, new_version)
     
-    # Output new version for GitHub Actions
-    print(f"::set-output name=new_version::{new_version}")
+    # Output new version for GitHub Actions (using GITHUB_OUTPUT env var)
     print(f"NEW_VERSION={new_version}")
 
 
