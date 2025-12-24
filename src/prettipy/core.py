@@ -347,11 +347,7 @@ class PrettipyConverter:
                 # Split into lines and wrap long lines before highlighting
                 # This prevents ReportLab from wrapping HTML-laden text incorrectly
                 lines = code.split("\n")
-                wrapped_lines = []
-                for line in lines:
-                    # Wrap each line if it exceeds max width
-                    wrapped = self.formatter.wrap_line(line)
-                    wrapped_lines.extend(wrapped)
+                wrapped_lines = [wrapped_line for line in lines for wrapped_line in self.formatter.wrap_line(line)]
                 
                 # Join back into code string
                 wrapped_code = "\n".join(wrapped_lines)
