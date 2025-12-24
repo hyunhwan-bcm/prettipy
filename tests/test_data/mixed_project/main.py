@@ -34,7 +34,7 @@ def process_data(data):
     total = 0
     product = 1
 
-    for i in range(len(data) - 1):
+    for i in range(len(data)):
         total = calculate_sum(total, data[i])
         product = calculate_product(product, data[i])
 
