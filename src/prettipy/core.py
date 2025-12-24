@@ -230,7 +230,12 @@ class PrettipyConverter:
             for file_path in files:
                 try:
                     code = file_path.read_text(encoding="utf-8")
-                    self.highlighter.prepare_for_linking(code, clear_existing=False)
+                    # Wrap lines before analyzing for linking
+                    # This ensures symbol tracking matches what will be highlighted
+                    lines = code.split("\n")
+                    wrapped_lines = [wrapped_line for line in lines for wrapped_line in self.formatter.wrap_line(line)]
+                    wrapped_code = "\n".join(wrapped_lines)
+                    self.highlighter.prepare_for_linking(wrapped_code, clear_existing=False)
                 except Exception:
                     continue
             # Reset anchors so they can be created during the actual highlighting phase
