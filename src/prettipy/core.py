@@ -344,9 +344,21 @@ class PrettipyConverter:
             try:
                 code = file_path.read_text(encoding="utf-8")
 
+                # Split into lines and wrap long lines before highlighting
+                # This prevents ReportLab from wrapping HTML-laden text incorrectly
+                lines = code.split("\n")
+                wrapped_lines = []
+                for line in lines:
+                    # Wrap each line if it exceeds max width
+                    wrapped = self.formatter.wrap_line(line)
+                    wrapped_lines.extend(wrapped)
+                
+                # Join back into code string
+                wrapped_code = "\n".join(wrapped_lines)
+
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs
-                highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
+                highlighted_lines = self.highlighter.highlight_code_multiline_aware(wrapped_code)
 
                 # Create code block using individual paragraphs for each line
                 # This prevents line overlapping issues that occur with <br/> tags
