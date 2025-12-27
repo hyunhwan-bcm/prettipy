@@ -79,7 +79,8 @@ class CodeFormatter:
                 remaining = comment_part[self.max_width - len(code_part) :].lstrip()
                 if remaining:
                     indent = len(line) - len(line.lstrip())
-                    lines.append(" " * (indent + 4) + remaining)
+                    # Prepend "# " to continuation line to maintain comment highlighting
+                    lines.append(" " * (indent + 4) + "# " + remaining)
             else:
                 lines[0] = code_part + " " + comment_part
             return lines
