@@ -156,19 +156,25 @@ class CodeFormatter:
 
         Args:
             text: The comment text to break
-            max_len: Maximum length for the segment
+            max_len: Maximum length for the segment (must be > 0)
 
         Returns:
-            Position to break at, or -1 if no good break point found
+            Position to break at (at or before max_len), or -1 if no good break point found.
+            Returns len(text) if text fits within max_len.
         """
+        if not text or max_len <= 0:
+            return -1
+            
         if len(text) <= max_len:
             return len(text)
         
         # Look for space before max_len
         # Search backwards from max_len for a space
-        for i in range(max_len, 0, -1):
-            if text[i-1:i+1] == ' ' or text[i:i+1] == ' ':
-                return i
+        for i in range(min(max_len, len(text)), 0, -1):
+            if i < len(text) and text[i] == ' ':
+                return i + 1  # Break after the space
+            if i > 0 and text[i-1] == ' ':
+                return i  # Break at the space
         
         return -1
 
