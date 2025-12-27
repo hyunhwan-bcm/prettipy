@@ -115,3 +115,40 @@ def func():
         assert lines[1] == "<br/>"
         # Function definition should have keyword highlighting
         assert "#007020" in lines[2]  # 'def' keyword color
+
+    def test_wrapped_comment_highlighting(self):
+        """Test that wrapped comment lines maintain comment color."""
+        from prettipy.formatter import CodeFormatter
+
+        highlighter = SyntaxHighlighter()
+        formatter = CodeFormatter(max_width=50)
+
+        # Long comment that will be wrapped
+        line = "# We can also plot average attention across all heads and layers"
+        wrapped_lines = formatter.wrap_line(line)
+
+        # Highlight each wrapped line
+        for wrapped_line in wrapped_lines:
+            highlighted = highlighter.highlight_line(wrapped_line)
+            # All wrapped comment lines should have comment color
+            assert "#60a0b0" in highlighted, f"Comment color missing in: {wrapped_line}"
+
+    def test_wrapped_inline_comment_highlighting(self):
+        """Test that wrapped inline comments maintain comment color on continuation."""
+        from prettipy.formatter import CodeFormatter
+
+        highlighter = SyntaxHighlighter()
+        formatter = CodeFormatter(max_width=50)
+
+        # Inline comment that will be wrapped
+        line = "x = 1  # This is a very long inline comment that should wrap"
+        wrapped_lines = formatter.wrap_line(line)
+
+        # Should have multiple lines
+        assert len(wrapped_lines) > 1
+
+        # All lines with comments should have comment color
+        for i, wrapped_line in enumerate(wrapped_lines):
+            if "#" in wrapped_line:
+                highlighted = highlighter.highlight_line(wrapped_line)
+                assert "#60a0b0" in highlighted, f"Comment color missing in line {i}: {wrapped_line}"
