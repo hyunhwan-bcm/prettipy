@@ -221,7 +221,7 @@ class PrettipyConverter:
                         display_files.append(self.ipynb_to_py_map[f])
                     else:
                         display_files.append(f)
-                
+
                 # Generate tree with links to file pages
                 tree_html, file_to_anchor = tree_generator.generate_linked_tree_html(
                     root, display_files, self.config.exclude_dirs
@@ -258,7 +258,7 @@ class PrettipyConverter:
 
             # Check if this is a converted notebook file
             original_ipynb_path = self.ipynb_to_py_map.get(file_path)
-            
+
             # Determine the display path and file to read from
             if original_ipynb_path:
                 # For converted notebooks, show the original .ipynb name in PDF
@@ -288,7 +288,9 @@ class PrettipyConverter:
             # File header with emoji, anchor, and back link
             if anchor_name:
                 # Add anchor to the file header so links from tree work
-                file_header_html = f'<a name="{anchor_name}"/>{file_emoji} {html.escape(str(display_path))}'
+                file_header_html = (
+                    f'<a name="{anchor_name}"/>{file_emoji} {html.escape(str(display_path))}'
+                )
             else:
                 file_header_html = f"{file_emoji} {html.escape(str(display_path))}"
 

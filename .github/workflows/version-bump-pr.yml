@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: version-bump-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: false
+
 jobs:
   bump-version:
     if: github.event.pull_request.merged == true
