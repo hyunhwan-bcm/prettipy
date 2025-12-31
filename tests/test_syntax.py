@@ -151,4 +151,6 @@ def func():
         for i, wrapped_line in enumerate(wrapped_lines):
             if "#" in wrapped_line:
                 highlighted = highlighter.highlight_line(wrapped_line)
-                assert "#60a0b0" in highlighted, f"Comment color missing in line {i}: {wrapped_line}"
+                assert (
+                    "#60a0b0" in highlighted
+                ), f"Comment color missing in line {i}: {wrapped_line}"

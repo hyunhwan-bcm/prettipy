@@ -32,7 +32,10 @@ class TestNotebookSupport:
                 {
                     "cell_type": "markdown",
                     "metadata": {},
-                    "source": ["# This is a markdown cell\n", "It should not appear in the Python output"],
+                    "source": [
+                        "# This is a markdown cell\n",
+                        "It should not appear in the Python output",
+                    ],
                 },
             ],
             "metadata": {
@@ -170,11 +173,7 @@ class TestNotebookSupport:
 
         output_pdf = tmp_path / "with_tree.pdf"
 
-        config = PrettipyConfig(
-            include_ipynb=True, 
-            show_directory_tree=True, 
-            verbose=True
-        )
+        config = PrettipyConfig(include_ipynb=True, show_directory_tree=True, verbose=True)
         converter = PrettipyConverter(config)
         converter.convert_directory(str(tmp_path), str(output_pdf))
 
