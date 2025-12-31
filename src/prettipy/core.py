@@ -316,7 +316,7 @@ class PrettipyConverter:
 
             # Get anchor for this file if directory tree is enabled
             anchor_name = (
-                file_to_anchor.get(str(rel_path), "") if self.config.show_directory_tree else ""
+                file_to_anchor.get(str(display_path), "") if self.config.show_directory_tree else ""
             )
 
             back_link_html = ""
@@ -331,7 +331,7 @@ class PrettipyConverter:
                     f'<a name="{anchor_name}"/>{file_emoji} {html.escape(str(display_path))}'
                 )
             else:
-                file_header_html = f"{emoji} {html.escape(str(rel_path))}"
+                file_header_html = f"{emoji} {html.escape(str(display_path))}"
 
             if back_link_html:
                 file_header_html = f"{file_header_html}{back_link_html}"

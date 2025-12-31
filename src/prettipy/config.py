@@ -121,6 +121,7 @@ class PrettipyConfig:
             "sort_method": self.sort_method,
             "reverse_deps": self.reverse_deps,
             "include_ipynb": self.include_ipynb,
+            "lint": self.lint,
             "output_file": self.output_file,
             "verbose": self.verbose,
         }
