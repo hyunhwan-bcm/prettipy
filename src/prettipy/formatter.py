@@ -75,12 +75,13 @@ class CodeFormatter:
             # Check if the full line fits
             if len(code_part + " " + comment_part) <= self.max_width:
                 return [code_part + " " + comment_part if code_part else comment_part]
-            
+
             # Need to wrap the comment - use word boundary wrapping
             lines = []
             indent = len(line) - len(line.lstrip())
+            base_indent = " " * indent
             continuation_indent = indent + 4
-            
+
             # First line: code + start of comment
             remaining = comment_part
             if code_part:
@@ -102,28 +103,28 @@ class CodeFormatter:
                     # Not enough space for comment, code on its own line
                     lines.append(code_part)
             else:
-                # Pure comment line - wrap it
-                # Find word boundary
-                break_pos = self._find_comment_break(remaining, self.max_width)
+                # Pure comment line - wrap it, preserving base indentation
+                available = self.max_width - indent
+                break_pos = self._find_comment_break(remaining, available)
                 if break_pos > 0:
-                    lines.append(remaining[:break_pos].rstrip())
+                    lines.append(base_indent + remaining[:break_pos].rstrip())
                     remaining = remaining[break_pos:].lstrip()
                     # Remove leading # from remaining since we'll add it back
                     if remaining.startswith("#"):
                         remaining = remaining[1:].lstrip()
                 else:
-                    # Can't find good break, use max_width
-                    lines.append(remaining[:self.max_width].rstrip())
-                    remaining = remaining[self.max_width:].lstrip()
+                    # Can't find good break, break at available space
+                    lines.append(base_indent + remaining[:available].rstrip())
+                    remaining = remaining[available:].lstrip()
                     if remaining.startswith("#"):
                         remaining = remaining[1:].lstrip()
-            
+
             # Wrap remaining comment text with proper indentation and # prefix
             while remaining:
                 # Add # prefix for continuation
                 line_text = "# " + remaining
                 available = self.max_width - continuation_indent
-                
+
                 if len(line_text) <= available:
                     # Remaining text fits
                     lines.append(" " * continuation_indent + line_text)
@@ -144,12 +145,12 @@ class CodeFormatter:
                         remaining = line_text[available:].lstrip()
                         if remaining.startswith("#"):
                             remaining = remaining[1:].lstrip()
-            
+
             return lines
 
         # Code part is too long, wrap it first
         return self._wrap_plain_line(line)
-    
+
     def _find_comment_break(self, text: str, max_len: int) -> int:
         """
         Find a good break point in comment text at a word boundary.
@@ -164,18 +165,16 @@ class CodeFormatter:
         """
         if not text or max_len <= 0:
             return -1
-            
+
         if len(text) <= max_len:
             return len(text)
-        
-        # Look for space before max_len
-        # Search backwards from max_len for a space
-        for i in range(min(max_len, len(text)), 0, -1):
-            if i < len(text) and text[i] == ' ':
-                return i + 1  # Break after the space
-            if i > 0 and text[i-1] == ' ':
-                return i  # Break at the space
-        
+
+        # Look for space at or before max_len
+        # We search backwards from max_len to find the last space that fits
+        for i in range(max_len, 0, -1):
+            if text[i - 1] == " ":
+                return i
+
         return -1
 
     def _wrap_plain_line(self, line: str) -> List[str]:
@@ -224,5 +223,8 @@ class CodeFormatter:
         for char in self.break_chars:
             pos = line.rfind(char, 0, self.max_width)
             if pos > best_break and pos > min_pos:
-                best_break = pos + len(char)
+                potential_break = pos + len(char)
+                # Ensure we don't exceed max_width
+                if potential_break <= self.max_width:
+                    best_break = potential_break
         return best_break
