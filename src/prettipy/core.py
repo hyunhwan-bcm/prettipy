@@ -6,10 +6,12 @@ the entire PDF generation process.
 """
 
 import html
+import black
 from pathlib import Path
 from typing import List, Optional
 from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle
+from reportlab.lib import colors
 
 from .config import PrettipyConfig
 from .formatter import CodeFormatter
@@ -147,6 +149,50 @@ class PrettipyConverter:
 
         self._generate_pdf(root, file_paths, output_path)
 
+    def _create_code_block(self, highlighted_lines: List[str]) -> List:
+        """
+        Create a code block from highlighted lines.
+
+        This method creates individual Paragraph elements for each line
+        to ensure proper line spacing and prevent overlapping text.
+
+        Args:
+            highlighted_lines: List of HTML-highlighted code lines
+
+        Returns:
+            List of flowable elements to add to the story
+        """
+        # Create a table with one column to simulate a bordered code block
+        # Each row contains one line of code
+        table_data = []
+        for line in highlighted_lines:
+            # Create a paragraph for each line with no vertical spacing
+            para = Paragraph(line, self.styles["code_line"])
+            table_data.append([para])
+
+        # Create the table
+        code_table = Table(
+            table_data,
+            colWidths=[None],  # Auto width
+        )
+
+        # Apply table styling to create the code block appearance
+        code_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f8f8f8")),
+                    ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#e0e0e0")),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 12),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ]
+            )
+        )
+
+        return [code_table, Spacer(1, 10)]
+
     def _generate_pdf(self, root: Path, files: List[Path], output_path: str):
         """
         Generate the PDF document.
@@ -202,6 +248,15 @@ class PrettipyConverter:
             tree_generator = DirectoryTreeGenerator(max_depth=self.config.directory_tree_max_depth)
 
             try:
+                # For the tree, we need to map display paths (original .ipynb) to their anchors
+                # Create a list of display files for the tree
+                display_files = []
+                for f in files:
+                    if f in self.ipynb_to_py_map:
+                        # Use the original .ipynb path for display
+                        display_files.append(self.ipynb_to_py_map[f])
+                    else:
+                        display_files.append(f)
                 # Use original paths for directory tree
                 tree_files = [self.ipynb_to_py_map.get(f, f) for f in files]
 
@@ -239,17 +294,29 @@ class PrettipyConverter:
             if idx > 0:
                 story.append(PageBreak())
 
-            # Use original notebook path for display if it was converted
-            display_path = self.ipynb_to_py_map.get(file_path, file_path)
+            # Check if this is a converted notebook file
+            original_ipynb_path = self.ipynb_to_py_map.get(file_path)
 
-            try:
-                rel_path = display_path.relative_to(root)
-            except ValueError:
-                rel_path = display_path
+            # Determine the display path and file to read from
+            if original_ipynb_path:
+                # For converted notebooks, show the original .ipynb name in PDF
+                try:
+                    display_path = original_ipynb_path.relative_to(root)
+                except ValueError:
+                    display_path = original_ipynb_path
+                # Use a notebook emoji for .ipynb files
+                file_emoji = "📓"
+            else:
+                # For regular .py files
+                try:
+                    display_path = file_path.relative_to(root)
+                except ValueError:
+                    display_path = file_path
+                file_emoji = "📄"
 
             # Get anchor for this file if directory tree is enabled
             anchor_name = (
-                file_to_anchor.get(str(rel_path), "") if self.config.show_directory_tree else ""
+                file_to_anchor.get(str(display_path), "") if self.config.show_directory_tree else ""
             )
 
             back_link_html = ""
@@ -260,9 +327,11 @@ class PrettipyConverter:
             emoji = "📓" if file_path in self.ipynb_to_py_map else "📄"
             if anchor_name:
                 # Add anchor to the file header so links from tree work
-                file_header_html = f'<a name="{anchor_name}"/>{emoji} {html.escape(str(rel_path))}'
+                file_header_html = (
+                    f'<a name="{anchor_name}"/>{file_emoji} {html.escape(str(display_path))}'
+                )
             else:
-                file_header_html = f"{emoji} {html.escape(str(rel_path))}"
+                file_header_html = f"{emoji} {html.escape(str(display_path))}"
 
             if back_link_html:
                 file_header_html = f"{file_header_html}{back_link_html}"
@@ -273,13 +342,23 @@ class PrettipyConverter:
             try:
                 code = file_path.read_text(encoding="utf-8")
 
+                # Format code with black before highlighting if linting is enabled
+                if self.config.lint:
+                    try:
+                        mode = black.Mode(line_length=self.config.max_line_width)
+                        code = black.format_str(code, mode=mode)
+                    except Exception:
+                        # If black fails (e.g. syntax error), use original code
+                        pass
+
                 # Highlight with multiline awareness
                 # This correctly handles triple-quoted strings and other multiline constructs
                 highlighted_lines = self.highlighter.highlight_code_multiline_aware(code)
 
-                # Create code block
-                full_code_html = "<br/>".join(highlighted_lines)
-                story.append(Paragraph(full_code_html, self.styles["code"]))
+                # Create code block using individual paragraphs for each line
+                # This prevents line overlapping issues that occur with <br/> tags
+                code_elements = self._create_code_block(highlighted_lines)
+                story.extend(code_elements)
 
             except Exception as e:
                 error_msg = f"Error reading file: {html.escape(str(e))}"
