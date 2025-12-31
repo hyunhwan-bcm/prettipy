@@ -83,6 +83,16 @@ def main():
     repo_root = Path(__file__).resolve().parents[2]
     pyproject_path = repo_root / "pyproject.toml"
     init_path = repo_root / "src" / "prettipy" / "__init__.py"
+
+    # Ensure expected files exist before proceeding
+    if not pyproject_path.is_file():
+        print(f"Error: pyproject.toml not found at {pyproject_path}")
+        sys.exit(1)
+
+    if not init_path.is_file():
+        print(f"Error: __init__.py not found at {init_path}")
+        print("Please ensure the package directory structure is correct before running this script.")
+        sys.exit(1)
     
     # Get current version
     current_version = get_current_version(pyproject_path)
