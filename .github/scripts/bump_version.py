@@ -44,13 +44,28 @@ def update_version_in_file(file_path, old_version, new_version):
     content = Path(file_path).read_text()
     
     if "pyproject.toml" in str(file_path):
-        pattern = r'(version\s*=\s*")' + re.escape(old_version) + r'"'
+        # Anchor to the start of a line to avoid updating unintended occurrences
+        pattern = r'(^\s*version\s*=\s*")' + re.escape(old_version) + r'"'
         replacement = r'\g<1>' + new_version + '"'
     else:  # __init__.py
-        pattern = r'(__version__\s*=\s*")' + re.escape(old_version) + r'"'
+        # Anchor to the start of a line to avoid updating unintended occurrences
+        pattern = r'(^\s*__version__\s*=\s*")' + re.escape(old_version) + r'"'
         replacement = r'\g<1>' + new_version + '"'
     
-    new_content = re.sub(pattern, replacement, content)
+    # Perform at most one replacement and validate the result
+    new_content, num_replacements = re.subn(
+        pattern,
+        replacement,
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    if num_replacements != 1:
+        raise ValueError(
+            f"Expected to update exactly one version occurrence in {file_path}, "
+            f"but updated {num_replacements}."
+        )
+    
     Path(file_path).write_text(new_content)
 
 
