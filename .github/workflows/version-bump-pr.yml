@@ -36,26 +36,8 @@ jobs:
         id: bump
         run: |
           python .github/scripts/bump_version.py patch
-          NEW_VERSION=$(python - << 'EOF'
-import re
-import sys
-from pathlib import Path
-
-try:
-    content = Path("pyproject.toml").read_text()
-except FileNotFoundError:
-    print("Error: pyproject.toml not found; cannot extract version.", file=sys.stderr)
-    sys.exit(1)
-
-match = re.search(r'version\s*=\s*"([^"]+)"', content)
-if not match:
-    print("Error: Could not find a version entry in pyproject.toml using the expected format.", file=sys.stderr)
-    sys.exit(1)
-
-print(match.group(1))
-EOF
-          )
-          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          NEW_VERSION=$(python -c "import re, sys; content = open('pyproject.toml').read(); match = re.search(r'version\s*=\s*\"([^\"]+)\"', content); print(match.group(1) if match else sys.exit(1))")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
       
       - name: Commit version bump
         run: |
