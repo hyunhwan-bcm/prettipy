@@ -41,7 +41,7 @@ class PrettipyConfig:
     include_patterns: List[str] = field(default_factory=lambda: ["*.py"])
 
     # Formatting options
-    max_line_width: int = 90
+    max_line_width: int = 79
     font_size: int = 9
     line_spacing: int = 14
 

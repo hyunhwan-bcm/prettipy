@@ -44,3 +44,30 @@ class TestCodeFormatter:
         result = formatter.wrap_line(line)
         # Check first line maintains indentation
         assert result[0].startswith("    ")
+
+    def test_long_comment_wrapping_with_hash(self):
+        """Test that wrapped comment lines preserve the # prefix."""
+        formatter = CodeFormatter(max_width=50)
+        line = "# We can also plot average attention across all heads and layers"
+        result = formatter.wrap_line(line)
+        # Should wrap into multiple lines
+        assert len(result) > 1
+        # All lines should start with # (after indentation)
+        for wrapped_line in result:
+            stripped = wrapped_line.lstrip()
+            assert stripped.startswith("#"), f"Line should start with #: {wrapped_line}"
+
+    def test_inline_comment_wrapping_with_hash(self):
+        """Test that wrapped inline comments preserve the # prefix on continuation."""
+        formatter = CodeFormatter(max_width=50)
+        line = "x = 1  # This is a very long inline comment that should wrap"
+        result = formatter.wrap_line(line)
+        # Should wrap into multiple lines
+        assert len(result) > 1
+        # First line should have code and start of comment
+        assert "x = 1" in result[0]
+        assert "#" in result[0]
+        # Continuation lines should start with # (after indentation)
+        for i in range(1, len(result)):
+            stripped = result[i].lstrip()
+            assert stripped.startswith("#"), f"Continuation line should start with #: {result[i]}"
