@@ -138,10 +138,7 @@ For more information, visit: https://github.com/yourusername/prettipy
 
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
-        parser.add_argument(
-            "--github",
-            help="GitHub repository URL to clone and convert",
-        )
+        parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
         parser.add_argument(
             "--include-ipynb",
@@ -149,7 +146,24 @@ For more information, visit: https://github.com/yourusername/prettipy
             help="Include Jupyter notebooks (converted to Python)",
         )
 
-        parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+        parser.add_argument(
+            "--lint",
+            action="store_true",
+            help="Apply black formatting to code before processing to ensure consistent layout",
+        )
+
+        parser.add_argument(
+            "--github",
+            dest="github_url",
+            help="Clone and convert a GitHub repository (e.g., https://github.com/user/repo)",
+        )
+
+        parser.add_argument(
+            "--branch",
+            "-b",
+            dest="github_branch",
+            help="Branch to checkout when cloning GitHub repository (default: repository's default branch)",
+        )
 
         parser.add_argument(
             "--init-config", action="store_true", help="Generate a sample configuration file"
@@ -221,6 +235,14 @@ For more information, visit: https://github.com/yourusername/prettipy
             self._init_config()
             return 0
 
+        # Validate conflicting arguments
+        if args.github_url and args.files:
+            self._print_error(
+                "Cannot use --github with --files. "
+                "GitHub mode converts the entire cloned repository."
+            )
+            return 1
+
         self._print_header()
 
         # Load configuration
@@ -242,7 +264,6 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.reverse_deps = (
                 getattr(args, "reverse_deps", False) or args.sort == "dependency-rev"
             )
-            config.include_ipynb = args.include_ipynb
 
             if args.no_linking:
                 config.enable_linking = False
@@ -256,6 +277,12 @@ For more information, visit: https://github.com/yourusername/prettipy
             if hasattr(args, "tree_depth"):
                 config.directory_tree_max_depth = args.tree_depth
 
+            if args.include_ipynb:
+                config.include_ipynb = True
+
+            if args.lint:
+                config.lint = True
+
             if args.title:
                 config.title = args.title
 
@@ -266,20 +293,31 @@ For more information, visit: https://github.com/yourusername/prettipy
         # Create converter
         converter = PrettipyConverter(config)
 
-        # Handle GitHub repository
-        temp_repo_dir = None
+        # Handle GitHub repository cloning
+        github_handler = None
         target_directory = args.directory
 
-        if args.github:
+        if args.github_url:
             try:
-                handler = GitHubHandler(verbose=args.verbose)
-                self._print_info(f"Cloning repository: {args.github}")
-                temp_repo_dir, branch = handler.clone_repository(args.github)
-                target_directory = str(temp_repo_dir)
+                github_handler = GitHubHandler(verbose=config.verbose)
+                self._print_info(f"Cloning GitHub repository: {args.github_url}")
+
+                if args.github_branch:
+                    self._print_info(f"Checking out branch: {args.github_branch}")
+
+                cloned_path, branch = github_handler.clone_repository(
+                    args.github_url, args.github_branch
+                )
+                target_directory = str(cloned_path)
                 # Set the source URL to the GitHub URL instead of the temp directory
-                config.source_url = args.github
+                config.source_url = args.github_url
+
+                self._print_success(f"Successfully cloned repository (branch: {branch})")
             except GitHubHandlerError as e:
                 self._print_error(str(e))
+                return 1
+            except Exception as e:
+                self._print_error(f"Unexpected error while cloning repository: {e}")
                 return 1
 
         # Convert files
@@ -290,7 +328,7 @@ For more information, visit: https://github.com/yourusername/prettipy
                     TextColumn("[progress.description]{task.description}"),
                     console=self.console,
                 ) as progress:
-                    task = progress.add_task("Converting files...", total=None)
+                    task = progress.add_task("Converting Python files...", total=None)
 
                     if args.files:
                         converter.convert_files(args.files, args.output)
@@ -304,10 +342,6 @@ For more information, visit: https://github.com/yourusername/prettipy
                     converter.convert_files(args.files, args.output)
                 else:
                     converter.convert_directory(target_directory, args.output)
-
-            # Cleanup temp repo if created
-            if temp_repo_dir and args.github:
-                handler.cleanup()
 
             return 0
 
@@ -324,6 +358,10 @@ For more information, visit: https://github.com/yourusername/prettipy
 
                 traceback.print_exc()
             return 1
+        finally:
+            # Always clean up GitHub temporary directory
+            if github_handler:
+                github_handler.cleanup()
 
 
 def main():

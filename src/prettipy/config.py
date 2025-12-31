@@ -66,10 +66,13 @@ class PrettipyConfig:
     # Jupyter notebook support
     include_ipynb: bool = False  # Include .ipynb files (converted to .py using nbconvert)
 
+    # Linting
+    lint: bool = False  # Apply black formatting to code before processing
+
     # Output
     output_file: str = "output.pdf"
     verbose: bool = False
-    
+
     # Source reference (e.g., GitHub URL for cloned repositories)
     source_url: Optional[str] = None
 
@@ -121,6 +124,7 @@ class PrettipyConfig:
             "sort_method": self.sort_method,
             "reverse_deps": self.reverse_deps,
             "include_ipynb": self.include_ipynb,
+            "lint": self.lint,
             "output_file": self.output_file,
             "verbose": self.verbose,
             "source_url": self.source_url,
