@@ -153,6 +153,12 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
         )
 
         parser.add_argument(
+            "--lint",
+            action="store_true",
+            help="Apply black formatting to code before processing to ensure consistent layout",
+        )
+
+        parser.add_argument(
             "--github",
             dest="github_url",
             help="Clone and convert a GitHub repository (e.g., https://github.com/user/repo)",
@@ -275,6 +281,9 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
             if hasattr(args, "include_ipynb") and args.include_ipynb:
                 config.include_ipynb = True
+
+            if hasattr(args, "lint") and args.lint:
+                config.lint = True
 
             if args.title:
                 config.title = args.title

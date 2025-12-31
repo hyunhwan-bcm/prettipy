@@ -66,6 +66,9 @@ class PrettipyConfig:
     # Jupyter notebook support
     include_ipynb: bool = False  # Include .ipynb files (converted to .py using nbconvert)
 
+    # Linting
+    lint: bool = False  # Apply black formatting to code before processing
+
     # Output
     output_file: str = "output.pdf"
     verbose: bool = False
