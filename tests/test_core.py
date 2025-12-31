@@ -128,6 +128,6 @@ class TestPrettipyConverter:
 
         assert output_pdf.exists()
         assert output_pdf.stat().st_size > 0
-        
+
         # Verify that the config has the source_url
         assert converter.config.source_url == github_url
