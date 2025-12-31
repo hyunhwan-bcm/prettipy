@@ -56,3 +56,34 @@ class TestPrettipyConfig:
         """Test exclude patterns functionality."""
         config = PrettipyConfig(exclude_patterns=["*_test.py"])
         assert config.should_exclude_path(Path("tests/example_test.py"))
+
+    def test_source_url_config(self):
+        """Test source_url configuration field."""
+        # Test default value
+        config = PrettipyConfig()
+        assert config.source_url is None
+        
+        # Test custom value
+        github_url = "https://github.com/hyunhwan-bcm/prettipy"
+        config = PrettipyConfig(source_url=github_url)
+        assert config.source_url == github_url
+
+    def test_save_and_load_config_with_source_url(self, tmp_path):
+        """Test saving and loading configuration with source_url from file."""
+        config_file = tmp_path / "test_config_with_url.json"
+        
+        # Create and save config with source_url
+        github_url = "https://github.com/hyunhwan-bcm/prettipy"
+        original_config = PrettipyConfig(
+            max_line_width=100, 
+            source_url=github_url,
+            title="Test Project"
+        )
+        original_config.to_file(config_file)
+        
+        # Load config
+        loaded_config = PrettipyConfig.from_file(config_file)
+        
+        assert loaded_config.max_line_width == 100
+        assert loaded_config.source_url == github_url
+        assert loaded_config.title == "Test Project"
