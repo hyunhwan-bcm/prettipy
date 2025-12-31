@@ -69,12 +69,12 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.bump.outputs.new_version }}
-          release_name: Release v${{ steps.bump.outputs.new_version }}
+          name: Release v${{ steps.bump.outputs.new_version }}
           body: |
             ## Release v${{ steps.bump.outputs.new_version }}
             
