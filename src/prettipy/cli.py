@@ -276,6 +276,8 @@ For more information, visit: https://github.com/yourusername/prettipy
                 self._print_info(f"Cloning repository: {args.github}")
                 temp_repo_dir, branch = handler.clone_repository(args.github)
                 target_directory = str(temp_repo_dir)
+                # Set the source URL to the GitHub URL instead of the temp directory
+                config.source_url = args.github
             except GitHubHandlerError as e:
                 self._print_error(str(e))
                 return 1

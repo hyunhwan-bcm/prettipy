@@ -69,6 +69,9 @@ class PrettipyConfig:
     # Output
     output_file: str = "output.pdf"
     verbose: bool = False
+    
+    # Source reference (e.g., GitHub URL for cloned repositories)
+    source_url: Optional[str] = None
 
     @classmethod
     def from_file(cls, config_path: Path) -> "PrettipyConfig":
@@ -120,6 +123,7 @@ class PrettipyConfig:
             "include_ipynb": self.include_ipynb,
             "output_file": self.output_file,
             "verbose": self.verbose,
+            "source_url": self.source_url,
         }
 
         with open(config_path, "w") as f:
