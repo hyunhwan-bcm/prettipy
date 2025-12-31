@@ -309,9 +309,10 @@ For more information, visit: https://github.com/yourusername/prettipy
                     args.github_url, args.github_branch
                 )
                 target_directory = str(cloned_path)
+                # Set the source URL to the GitHub URL instead of the temp directory
+                config.source_url = args.github_url
 
                 self._print_success(f"Successfully cloned repository (branch: {branch})")
-
             except GitHubHandlerError as e:
                 self._print_error(str(e))
                 return 1

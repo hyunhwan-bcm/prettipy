@@ -233,8 +233,13 @@ class PrettipyConverter:
         title = self.config.title or f"Python Scripts from {root.name}/"
         story.append(Paragraph(html.escape(title), self.styles["title"]))
         story.append(Paragraph(f"<b>Total files:</b> {len(files)}", self.styles["info"]))
+
+        # Use source_url if available (e.g., GitHub URL), otherwise use local path
+        source_reference = self.config.source_url if self.config.source_url else str(root)
         story.append(
-            Paragraph(f"<b>Generated from:</b> {html.escape(str(root))}", self.styles["info"])
+            Paragraph(
+                f"<b>Generated from:</b> {html.escape(source_reference)}", self.styles["info"]
+            )
         )
         story.append(Spacer(1, 0.3 * 72))  # 0.3 inch
 

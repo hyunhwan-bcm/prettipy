@@ -111,3 +111,23 @@ class TestPrettipyConverter:
 
         assert output_pdf.exists()
         assert output_pdf.stat().st_size > 0
+
+    def test_source_url_in_config(self, tmp_path):
+        """Test that source_url is properly stored and used in PDF generation."""
+        # Create a test Python file
+        test_file = tmp_path / "test.py"
+        test_file.write_text("print('Hello from GitHub')")
+
+        output_pdf = tmp_path / "output_with_source_url.pdf"
+
+        # Create config with source_url
+        github_url = "https://github.com/hyunhwan-bcm/prettipy"
+        config = PrettipyConfig(source_url=github_url)
+        converter = PrettipyConverter(config)
+        converter.convert_directory(str(tmp_path), str(output_pdf))
+
+        assert output_pdf.exists()
+        assert output_pdf.stat().st_size > 0
+
+        # Verify that the config has the source_url
+        assert converter.config.source_url == github_url
