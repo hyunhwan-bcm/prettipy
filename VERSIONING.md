@@ -61,8 +61,8 @@ python .github/scripts/bump_version.py major
 ## Version Locations
 
 The version is maintained in two files:
-1. `pyproject.toml` - Line 7: `version = "X.X.X"`
-2. `src/prettipy/__init__.py` - Line 8: `__version__ = "X.X.X"`
+1. `pyproject.toml`: `version = "X.X.X"`
+2. `src/prettipy/__init__.py`: `__version__ = "X.X.X"`
 
 Both files are automatically updated in sync by the version bump script.
 
