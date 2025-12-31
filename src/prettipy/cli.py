@@ -264,7 +264,6 @@ For more information, visit: https://github.com/yourusername/prettipy
             config.reverse_deps = (
                 getattr(args, "reverse_deps", False) or args.sort == "dependency-rev"
             )
-            config.include_ipynb = args.include_ipynb
 
             if args.no_linking:
                 config.enable_linking = False
@@ -278,10 +277,10 @@ For more information, visit: https://github.com/yourusername/prettipy
             if hasattr(args, "tree_depth"):
                 config.directory_tree_max_depth = args.tree_depth
 
-            if hasattr(args, "include_ipynb") and args.include_ipynb:
+            if args.include_ipynb:
                 config.include_ipynb = True
 
-            if hasattr(args, "lint") and args.lint:
+            if args.lint:
                 config.lint = True
 
             if args.title:
