@@ -36,7 +36,37 @@ jobs:
         id: bump
         run: |
           python .github/scripts/bump_version.py minor
-          NEW_VERSION=$(python -c "import re; content = open('pyproject.toml').read(); print(re.search(r'version\s*=\s*\"([^\"]+)\"', content).group(1))")
+          NEW_VERSION=$(python - << 'PYCODE'
+import sys
+import tomllib
+from pathlib import Path
+
+pyproject_path = Path("pyproject.toml")
+try:
+    content = pyproject_path.read_text(encoding="utf-8")
+except FileNotFoundError:
+    print("Error: pyproject.toml not found in repository root.", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    data = tomllib.loads(content)
+except tomllib.TOMLDecodeError as exc:
+    print(f"Error: Failed to parse pyproject.toml: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    version = data["project"]["version"]
+except KeyError:
+    print("Error: 'project.version' not found in pyproject.toml.", file=sys.stderr)
+    sys.exit(1)
+
+if not isinstance(version, str) or not version.strip():
+    print("Error: 'project.version' in pyproject.toml is empty or not a string.", file=sys.stderr)
+    sys.exit(1)
+
+print(version)
+PYCODE
+)
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
       
       - name: Commit version bump
