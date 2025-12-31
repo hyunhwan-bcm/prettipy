@@ -57,10 +57,8 @@ Examples:
   prettipy --sort dependency           # Sort files by dependencies
   prettipy --sort lexicographic        # Sort files alphabetically
   prettipy --sort none                 # No sorting (discovery order)
-  prettipy --github https://github.com/user/repo  # Clone and convert GitHub repo
-  prettipy --github https://github.com/user/repo -b dev  # Clone specific branch
 
-For more information, visit: https://github.com/hyunhwan-bcm/prettipy
+For more information, visit: https://github.com/yourusername/prettipy
             """,
         )
 
@@ -140,16 +138,15 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
         parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
-        parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-
         parser.add_argument(
-            "--init-config", action="store_true", help="Generate a sample configuration file"
+            "--github",
+            help="GitHub repository URL to clone and convert",
         )
 
         parser.add_argument(
             "--include-ipynb",
             action="store_true",
-            help="Include Jupyter notebook (.ipynb) files, converting them to Python using nbconvert",
+            help="Include Jupyter notebooks (converted to Python)",
         )
 
         parser.add_argument(
@@ -165,10 +162,7 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
         )
 
         parser.add_argument(
-            "--branch",
-            "-b",
-            dest="github_branch",
-            help="Branch to checkout when cloning GitHub repository (default: repository's default branch)",
+            "--init-config", action="store_true", help="Generate a sample configuration file"
         )
 
         return parser
@@ -237,14 +231,6 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
             self._init_config()
             return 0
 
-        # Validate conflicting arguments
-        if args.github_url and args.files:
-            self._print_error(
-                "Cannot use --github with --files. "
-                "GitHub mode converts the entire cloned repository."
-            )
-            return 1
-
         self._print_header()
 
         # Load configuration
@@ -266,6 +252,7 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
             config.reverse_deps = (
                 getattr(args, "reverse_deps", False) or args.sort == "dependency-rev"
             )
+            config.include_ipynb = args.include_ipynb
 
             if args.no_linking:
                 config.enable_linking = False
@@ -295,30 +282,18 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
         # Create converter
         converter = PrettipyConverter(config)
 
-        # Handle GitHub repository cloning
-        github_handler = None
+        # Handle GitHub repository
+        temp_repo_dir = None
         target_directory = args.directory
 
-        if args.github_url:
+        if args.github:
             try:
-                github_handler = GitHubHandler(verbose=config.verbose)
-                self._print_info(f"Cloning GitHub repository: {args.github_url}")
-
-                if args.github_branch:
-                    self._print_info(f"Checking out branch: {args.github_branch}")
-
-                cloned_path, branch = github_handler.clone_repository(
-                    args.github_url, args.github_branch
-                )
-                target_directory = str(cloned_path)
-
-                self._print_success(f"Successfully cloned repository (branch: {branch})")
-
+                handler = GitHubHandler(verbose=args.verbose)
+                self._print_info(f"Cloning repository: {args.github}")
+                temp_repo_dir, branch = handler.clone_repository(args.github)
+                target_directory = str(temp_repo_dir)
             except GitHubHandlerError as e:
                 self._print_error(str(e))
-                return 1
-            except Exception as e:
-                self._print_error(f"Unexpected error while cloning repository: {e}")
                 return 1
 
         # Convert files
@@ -329,7 +304,7 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
                     TextColumn("[progress.description]{task.description}"),
                     console=self.console,
                 ) as progress:
-                    task = progress.add_task("Converting Python files...", total=None)
+                    task = progress.add_task("Converting files...", total=None)
 
                     if args.files:
                         converter.convert_files(args.files, args.output)
@@ -343,6 +318,10 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
                     converter.convert_files(args.files, args.output)
                 else:
                     converter.convert_directory(target_directory, args.output)
+
+            # Cleanup temp repo if created
+            if temp_repo_dir and args.github:
+                handler.cleanup()
 
             return 0
 
@@ -359,10 +338,6 @@ For more information, visit: https://github.com/hyunhwan-bcm/prettipy
 
                 traceback.print_exc()
             return 1
-        finally:
-            # Always clean up GitHub temporary directory
-            if github_handler:
-                github_handler.cleanup()
 
 
 def main():

@@ -12,7 +12,7 @@ class TestPrettipyConfig:
     def test_default_config(self):
         """Test default configuration."""
         config = PrettipyConfig()
-        assert config.max_line_width == 90
+        assert config.max_line_width == 79
         assert config.page_size == "letter"
         assert "venv" in config.exclude_dirs
         assert "__pycache__" in config.exclude_dirs

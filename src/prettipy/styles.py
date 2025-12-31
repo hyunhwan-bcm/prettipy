@@ -159,6 +159,21 @@ class StyleManager:
             alignment=TA_LEFT,
         )
 
+        # Style for individual code lines (used when rendering line-by-line)
+        # This has no spacing between lines to prevent gaps
+        # No indents here since the table provides padding
+        self.code_line_style = ParagraphStyle(
+            "CodeLine",
+            fontName=self.font_name,
+            fontSize=9,
+            leading=14,
+            leftIndent=0,
+            rightIndent=0,
+            spaceBefore=0,
+            spaceAfter=0,
+            alignment=TA_LEFT,
+        )
+
     def get_page_margins(self) -> Tuple[float, float, float, float]:
         """
         Get page margins.

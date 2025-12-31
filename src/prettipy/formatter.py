@@ -72,20 +72,110 @@ class CodeFormatter:
 
         # If code part fits, just wrap the comment
         if len(code_part) <= self.max_width:
-            lines = [code_part]
-            # Wrap comment if needed
-            if len(code_part + " " + comment_part) > self.max_width:
-                lines[0] = code_part + " " + comment_part[: self.max_width - len(code_part)]
-                remaining = comment_part[self.max_width - len(code_part) :].lstrip()
-                if remaining:
-                    indent = len(line) - len(line.lstrip())
-                    lines.append(" " * (indent + 4) + remaining)
+            # Check if the full line fits
+            if len(code_part + " " + comment_part) <= self.max_width:
+                return [code_part + " " + comment_part if code_part else comment_part]
+
+            # Need to wrap the comment - use word boundary wrapping
+            lines = []
+            indent = len(line) - len(line.lstrip())
+            base_indent = " " * indent
+            continuation_indent = indent + 4
+
+            # First line: code + start of comment
+            remaining = comment_part
+            if code_part:
+                # There's code before the comment
+                available = self.max_width - len(code_part) - 1  # -1 for space
+                if available > 10:  # Only include comment if reasonable space
+                    # Find word boundary in comment
+                    break_pos = self._find_comment_break(remaining, available)
+                    if break_pos > 0:
+                        lines.append(code_part + " " + remaining[:break_pos].rstrip())
+                        remaining = remaining[break_pos:].lstrip()
+                        # Remove leading # from remaining since we'll add it back
+                        if remaining.startswith("#"):
+                            remaining = remaining[1:].lstrip()
+                    else:
+                        # Can't fit any comment, put code on its own line
+                        lines.append(code_part)
+                else:
+                    # Not enough space for comment, code on its own line
+                    lines.append(code_part)
             else:
-                lines[0] = code_part + " " + comment_part
+                # Pure comment line - wrap it, preserving base indentation
+                available = self.max_width - indent
+                break_pos = self._find_comment_break(remaining, available)
+                if break_pos > 0:
+                    lines.append(base_indent + remaining[:break_pos].rstrip())
+                    remaining = remaining[break_pos:].lstrip()
+                    # Remove leading # from remaining since we'll add it back
+                    if remaining.startswith("#"):
+                        remaining = remaining[1:].lstrip()
+                else:
+                    # Can't find good break, break at available space
+                    lines.append(base_indent + remaining[:available].rstrip())
+                    remaining = remaining[available:].lstrip()
+                    if remaining.startswith("#"):
+                        remaining = remaining[1:].lstrip()
+
+            # Wrap remaining comment text with proper indentation and # prefix
+            while remaining:
+                # Add # prefix for continuation
+                line_text = "# " + remaining
+                available = self.max_width - continuation_indent
+
+                if len(line_text) <= available:
+                    # Remaining text fits
+                    lines.append(" " * continuation_indent + line_text)
+                    break
+                else:
+                    # Need to wrap further - find word boundary
+                    # Look for break in the comment text (after "# ")
+                    break_pos = self._find_comment_break(line_text, available)
+                    if break_pos > 2:  # Must be after "# "
+                        lines.append(" " * continuation_indent + line_text[:break_pos].rstrip())
+                        remaining = line_text[break_pos:].lstrip()
+                        # Remove # if present since we'll add it back
+                        if remaining.startswith("#"):
+                            remaining = remaining[1:].lstrip()
+                    else:
+                        # No good break found, break at available space
+                        lines.append(" " * continuation_indent + line_text[:available].rstrip())
+                        remaining = line_text[available:].lstrip()
+                        if remaining.startswith("#"):
+                            remaining = remaining[1:].lstrip()
+
             return lines
 
         # Code part is too long, wrap it first
         return self._wrap_plain_line(line)
+
+    def _find_comment_break(self, text: str, max_len: int) -> int:
+        """
+        Find a good break point in comment text at a word boundary.
+
+        Args:
+            text: The comment text to break
+            max_len: Maximum length for the segment (must be > 0)
+
+        Returns:
+            Position to break at (at or before max_len), or -1 if no good break point found.
+            Returns len(text) if text fits within max_len.
+        """
+        if not text or max_len <= 0:
+            return -1
+
+        if len(text) <= max_len:
+            return len(text)
+
+        # Look for space at or before max_len
+        # We search backwards from max_len to find the last space that fits
+        for i in range(max_len, 0, -1):
+            if text[i - 1] == " ":
+                return i
+
+        return -1
 
     def _wrap_plain_line(self, line: str) -> List[str]:
         """
@@ -133,5 +223,8 @@ class CodeFormatter:
         for char in self.break_chars:
             pos = line.rfind(char, 0, self.max_width)
             if pos > best_break and pos > min_pos:
-                best_break = pos + len(char)
+                potential_break = pos + len(char)
+                # Ensure we don't exceed max_width
+                if potential_break <= self.max_width:
+                    best_break = potential_break
         return best_break
